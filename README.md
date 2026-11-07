@@ -4,6 +4,8 @@ A browser tool for level designers to explore LILA BLACK player journeys, combat
 
 **[Open the hosted tool](https://gameplay-journey-visualiser.vercel.app)** — no sign-in required.
 
+**[GitHub repository](https://github.com/mskbaruah25/Gameplay-journey-visualiser/tree/production)** — source code and documentation on the `production` branch.
+
 The supplied dataset contains 1,243 files. After excluding one identical file copy, the tool serves **89,016 events across 796 matches and 1,242 match-scoped participants**. These are supplied recordings, not complete lobbies.
 
 ## Tech Stack
@@ -18,30 +20,9 @@ The supplied dataset contains 1,243 files. After excluding one identical file co
 
 Ingestion runs separately as a manual container job. The hosted tool does not require local containers to remain running.
 
-## Basic Usage Guide
-
-1. **Open the tool:** in the left **Match selection** panel, choose **Map → Ambrose Valley** and **UTC date → 12 Feb 2026**.
-2. **Choose the example:** enter `fbbc5d02` in **Search matches**, then open **Match** and select **Match 114 · 1 human · 15 bots**. Searching only filters the list; select the result to open it.
-3. **Read Overview:** the centre panel shows the minimap; summary cards sit below it. This example has **1,015 events**, **995 position samples**, **5 kill labels**, **8 death labels**, and **7 loot items**. Click left-panel **Heatmap layers** to toggle overlays.
-4. **Watch journeys:** click **Playback** above the map. The left panel becomes **Recorded participants**; playback controls appear below the map. Uncheck/recheck a participant to hide/restore its journey and markers.
-5. **Inspect events:** use **Jump to combat** below the slider, then click a map marker. Close **Marker inspector** with **×** or **Escape**. Click **Overview** above the map to return; your match selection stays unchanged.
-
-### Analyse the Example Match
-
-The recording spans **8:43** across **120 timestamp groups**. Try these checks:
-
-| Moment | What to inspect | What the recording shows |
-| --- | --- | --- |
-| 01:13 | Choose **01:13 · 1 kill label** in **Jump to combat**; click the kill marker. | `BotKill` is credited to **Bot 1471**; no victim is identified. |
-| 01:58 | Choose **01:58 · 1 death label**; inspect the death marker. | Human `5787de75…` has a `BotKilled` label. Human trails are solid; bot trails are dashed. |
-| 05:06 | Choose **05:06 · 2 death labels**; inspect a death marker and its **Recorded event** dropdown. | Bots **1440** and **1444** have simultaneous `BotKilled` records; this does not establish one shared fight. |
-| 00:33–01:54 | Enable **Loot pickups** in Overview; seek to loot moments in Playback. | All seven Loot rows belong to **Bot 1429**; six cluster near X = −50, Z = −355. |
-
-Compare that loot cluster with **Player traffic** and **Kill zones**, then replay nearby activity to investigate route/combat overlap. The recording does not establish loot availability or causation.
-
 ## Feature Walkthrough
 
-Use the example above unless a different recording is specified.
+For these checks, select **Ambrose Valley → 12 Feb 2026**, search `fbbc5d02`, and choose **Match 114 · 1 human · 15 bots**, unless another recording is specified.
 
 | Feature | Steps to check | Expected result |
 | --- | --- | --- |
@@ -49,10 +30,12 @@ Use the example above unless a different recording is specified.
 | Heatmaps | Toggle **Player traffic**, **Kill zones**, **Death zones**, and **Loot pickups**. Drag **Overlay opacity**; click **Reset layers**. | Density/opacity changes; reset clears overlays and restores 75% opacity. |
 | Human/bot journeys | In Playback, uncheck/recheck **Bot 1471**. | Its journey and markers disappear/return; **Map legend** explains colours and symbols. |
 | Playback controls | Try **Play/Pause**, the circular-arrow **Restart**, all five speeds (1x–2x), and the **Recorded timestamps** slider. | Clock/trails update; restart returns to the beginning. **Event x of 120** counts timestamp groups. |
-| Combat and inspection | Click a timeline indicator or follow the 01:13/05:06 checks above. | Playback pauses; the inspector shows actor/time/coordinates and simultaneous records. |
+| Combat and inspection | Click a timeline indicator or choose **01:13** or **05:06** in **Jump to combat**. | Playback pauses; the inspector shows actor/time/coordinates and simultaneous records. |
 | Storm deaths | Disable **Multiple recorded participants**. Choose **Ambrose Valley → 10 Feb 2026**; search/select `5a081fe4`. In Playback, choose **14:38 · 1 storm death**. | The storm marker inspects as `KilledByStorm`. Overview's **Storm deaths** layer shows its location. |
 | Map controls | Click **+**, drag the map, then click the circular-arrow **Reset view**. | Zoom/pan changes; reset restores the initial view. |
 | Panels/fullscreen | Toggle **Hide/Show sidebar**, **Hide/Show statistics** in Overview, and **Map legend**. Click the expand icon; exit with it or Escape. | Panels reopen. Fullscreen retains heatmap controls in Overview and timeline/inspection in Playback. |
+
+For menu-by-menu directions and a worked match analysis, see the [Use Case Walkthrough](#use-case-walkthrough) at the end of this README.
 
 ## Local Setup
 
@@ -123,3 +106,24 @@ Adjust the URL if `WEB_PORT` changes. ETL test commands and recorded verificatio
 - [ARCHITECTURE.md](ARCHITECTURE.md) — data flow, mapping, assumptions, and tradeoffs.
 - [Data nuances](docs/DATA_NUANCES.md) — observed issues and handling decisions.
 - [Exploration](rough%20work/README.md) — notebooks, experimental SQL, and supporting evidence.
+
+## Use Case Walkthrough
+
+1. **Open the tool:** in the left **Match selection** panel, choose **Map → Ambrose Valley** and **UTC date → 12 Feb 2026**.
+2. **Choose the example:** enter `fbbc5d02` in **Search matches**, then open **Match** and select **Match 114 · 1 human · 15 bots**. Searching only filters the list; select the result to open it.
+3. **Read Overview:** the centre panel shows the minimap; summary cards sit below it. This example has **1,015 events**, **995 position samples**, **5 kill labels**, **8 death labels**, and **7 loot items**. Click left-panel **Heatmap layers** to toggle overlays.
+4. **Watch journeys:** click **Playback** above the map. The left panel becomes **Recorded participants**; playback controls appear below the map. Uncheck/recheck a participant to hide/restore its journey and markers.
+5. **Inspect events:** use **Jump to combat** below the slider, then click a map marker. Close **Marker inspector** with **×** or **Escape**. Click **Overview** above the map to return; your match selection stays unchanged.
+
+### Analyse the Example Match
+
+The recording spans **8:43** across **120 timestamp groups**. Try these checks:
+
+| Moment | What to inspect | What the recording shows |
+| --- | --- | --- |
+| 01:13 | Choose **01:13 · 1 kill label** in **Jump to combat**; click the kill marker. | `BotKill` is credited to **Bot 1471**; no victim is identified. |
+| 01:58 | Choose **01:58 · 1 death label**; inspect the death marker. | Human `5787de75…` has a `BotKilled` label. Human trails are solid; bot trails are dashed. |
+| 05:06 | Choose **05:06 · 2 death labels**; inspect a death marker and its **Recorded event** dropdown. | Bots **1440** and **1444** have simultaneous `BotKilled` records; this does not establish one shared fight. |
+| 00:33–01:54 | Enable **Loot pickups** in Overview; seek to loot moments in Playback. | All seven Loot rows belong to **Bot 1429**; six cluster near X = −50, Z = −355. |
+
+Compare that loot cluster with **Player traffic** and **Kill zones**, then replay nearby activity to investigate route/combat overlap. The recording does not establish loot availability or causation.
