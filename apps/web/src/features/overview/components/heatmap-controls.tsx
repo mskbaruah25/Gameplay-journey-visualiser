@@ -1,3 +1,4 @@
+import { useId } from "react";
 import { Check, Crosshair, Footprints, Package, RotateCcw, Skull, Wind } from "lucide-react";
 import { LAYERS, type HeatmapLayer } from "../types";
 
@@ -11,8 +12,13 @@ interface Props {
 }
 
 export function HeatmapControls({ layers, opacity, onLayersChange, onOpacityChange }: Props) {
-  return <section className="heatmap-section" aria-labelledby="heatmap-heading">
-    <div className="section-heading"><h2 id="heatmap-heading">Heatmap layers</h2><span>{String(layers.length).padStart(2, "0")}</span></div>
+  // Sidebar and fullscreen controls share state, but need separate label targets.
+  const id = useId();
+  const headingId = `${id}-heading`;
+  const opacityId = `${id}-opacity`;
+
+  return <section className="heatmap-section" aria-labelledby={headingId}>
+    <div className="section-heading"><h2 id={headingId}>Heatmap layers</h2><span>{String(layers.length).padStart(2, "0")}</span></div>
     <p className="section-description">Recorded activity for this match and UTC date.</p>
     <div className="layer-list">
       {LAYERS.map((layer) => {
@@ -27,8 +33,8 @@ export function HeatmapControls({ layers, opacity, onLayersChange, onOpacityChan
       })}
     </div>
     <div className={`opacity-control ${!layers.length ? "is-disabled" : ""}`}>
-      <label htmlFor="opacity">Overlay opacity<span>{opacity}%</span></label>
-      <input id="opacity" type="range" min="15" max="100" value={opacity} disabled={!layers.length}
+      <label htmlFor={opacityId}>Overlay opacity<span>{opacity}%</span></label>
+      <input id={opacityId} type="range" min="15" max="100" value={opacity} disabled={!layers.length}
         style={{ "--range-progress": `${(opacity - 15) / 85 * 100}%` } as React.CSSProperties}
         onChange={(event) => onOpacityChange(Number(event.target.value))} />
     </div>

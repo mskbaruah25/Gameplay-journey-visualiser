@@ -14,6 +14,7 @@ import { useExplorerData } from "../hooks/use-explorer-data";
 import { MapViewport } from "./map-viewport";
 import { HeatmapOverlay } from "./heatmap-overlay";
 import { HeatmapControls } from "./heatmap-controls";
+import { FullscreenHeatmapPanel } from "./fullscreen-heatmap-panel";
 import { MatchStatistics } from "./match-statistics";
 
 const EMPTY_FRAMES: PlaybackFrame[] = [];
@@ -103,12 +104,14 @@ export function OverviewPage() {
           </div>
         </div>
         <MapViewport key={data.mapId} map={map} layers={layers} mode={mode}
+          fullscreenPanel={!isPlayback && <FullscreenHeatmapPanel layers={layers} opacity={opacity}
+            onLayersChange={setLayers} onOpacityChange={setOpacity} />}
+          footer={isPlayback ? <PlaybackControls frames={frames} playback={playback} /> : undefined}
           statusText={data.loading ? "Loading recordings…" : isPlayback ? `${participants.length} ${participants.length === 1 ? "participant" : "participants"} · ${formatElapsed(frames[playback.index]?.elapsedSeconds ?? 0)}` : layers.length ? "Event density" : "No overlays selected"}>
           {isPlayback ? <JourneyOverlay frames={frames} index={playback.index} participants={participants} hidden={hidden} />
             : <HeatmapOverlay heatmaps={data.heatmaps.data ?? []} opacity={opacity} />}
         </MapViewport>
-        {isPlayback ? <PlaybackControls frames={frames} playback={playback} />
-          : <div className="map-panel-footer"><span><span className="status-dot" />{layers.length ? "Density counts recorded events; traffic counts position samples" : "Select a heatmap layer to explore this recording"}</span><span><Layers2 size={13} />{layers.length} / {LAYERS.length} layers</span></div>}
+        {!isPlayback && <div className="map-panel-footer"><span><span className="status-dot" />{layers.length ? "Density counts recorded events; traffic counts position samples" : "Select a heatmap layer to explore this recording"}</span><span><Layers2 size={13} />{layers.length} / {LAYERS.length} layers</span></div>}
       </section>
       {!isPlayback && <MatchStatistics overview={data.overview.data} />}
       <div className="coverage-note"><Info size={14} /><p>{isPlayback

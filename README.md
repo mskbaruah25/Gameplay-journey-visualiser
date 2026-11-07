@@ -13,6 +13,8 @@ The ETL uses Spark for all Parquet reads and writes, including its test fixtures
 3. Switch to Playback to see recorded journeys and distinct event markers. The participant panel identifies humans and bots and lets you hide individual journeys.
 4. Play, pause, restart, or seek to a recorded timestamp. Choose one of the five speeds from 1x to 2x. Playback steps through recorded moments rather than interpolating movement.
 
+Use the map's fullscreen button for a larger view. Overview includes a collapsible heatmap panel with layer filters, opacity, reset, and a colour/density legend. Playback keeps the timestamp scrubber and transport controls at the bottom. Selections and playback state persist when fullscreen closes.
+
 Filters show only the supplied recordings for that selection. Counts describe retained event labels and position samples; they do not imply a complete lobby or verified killer/victim relationships.
 
 ## Start locally

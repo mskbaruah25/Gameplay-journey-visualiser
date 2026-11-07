@@ -103,10 +103,12 @@ h1 { font-size: 27px; letter-spacing: -.8px; font-weight: 580; display: flex; al
 .view-tab { display: flex; align-items: center; gap: 7px; border-radius: 4px; padding: 9px 11px; border: none; font-size: 10px; background: transparent; color: #91a086; }
 .view-tab:hover:not(.active) { background: #26311f; color: #d0dfc2; }
 .view-tab.active { background: #303c25; color: #d1e8ba; box-shadow: 0 1px 3px #0004; }
+.map-view { position: relative; display: flex; flex-direction: column; flex: 1; min-height: 0; }
 .map-viewport { position: relative; flex: 1; min-height: 300px; overflow: hidden; isolation: isolate; background-color: #10160f; background-image: linear-gradient(#81977008 1px, transparent 1px), linear-gradient(90deg, #81977008 1px, transparent 1px); background-size: 56px 56px; touch-action: pan-y; }
 .map-viewport.is-zoomed { cursor: grab; touch-action: none; }
 .map-viewport.dragging { cursor: grabbing; }
-.map-viewport:fullscreen { min-height: 100dvh; display: flex; background-color: #10160f; }
+.map-view:fullscreen { width: 100%; height: 100dvh; background: #10160f; }
+.map-view:fullscreen .map-viewport { flex: 1; height: auto; min-height: 0; }
 .map-image-space { position: absolute; inset: 20px 0; display: flex; justify-content: center; align-items: center; }
 .map-image-transform { height: 100%; max-width: 100%; position: relative; flex-shrink: 0; will-change: transform; background: #10160f; }
 .minimap-image { display: block; width: 100%; height: 100%; user-select: none; filter: brightness(1.22) saturate(.8); mix-blend-mode: lighten; }
@@ -216,3 +218,27 @@ h1 { font-size: 27px; letter-spacing: -.8px; font-weight: 580; display: flex; al
   .coverage-note > svg { margin-top: 1px; }
 }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+
+/* Fullscreen tools stay above the map and never move with a panned journey. */
+.map-fullscreen-panel { position: absolute; top: 18px; left: 18px; z-index: 4; width: 252px; max-width: calc(100% - 90px); border: 1px solid #435239; border-radius: 8px; background: #171d17f5; box-shadow: 0 8px 32px #0005; }
+.map-fullscreen-panel summary { display: flex; align-items: center; gap: 9px; padding: 14px 16px; cursor: pointer; list-style: none; color: #d4e6c4; font-size: 12px; font-weight: 550; }
+.map-fullscreen-panel summary::-webkit-details-marker { display: none; }
+.map-fullscreen-panel summary > svg:last-child { margin-left: auto; transition: transform 150ms; }
+.map-fullscreen-panel details:not([open]) summary > svg:last-child { transform: rotate(-90deg); }
+.fullscreen-panel-content { max-height: calc(100dvh - 90px); overflow-y: auto; overscroll-behavior: contain; border-top: 1px solid var(--line); }
+.map-fullscreen-panel .heatmap-section { display: block; padding: 16px; }
+.map-fullscreen-panel .section-heading { display: flex; }
+.map-fullscreen-panel .section-description { display: block; line-height: 1.5; }
+.map-fullscreen-panel .layer-list { display: flex; flex-direction: column; margin: 12px -6px 18px; gap: 4px; }
+.map-fullscreen-panel .layer-button { width: 100%; font-size: 11px; }
+.map-fullscreen-panel .layer-checkbox { margin-left: auto; }
+.map-fullscreen-panel .reset-layers { margin-top: 20px; }
+.map-view:fullscreen:has(.map-fullscreen-panel) .map-layer-note { left: auto; right: 18px; }
+.heatmap-legend { padding: 16px; border-top: 1px solid var(--line); }
+.heatmap-legend h2 { font-size: 12px; font-weight: 600; }
+.heatmap-legend ul { display: grid; gap: 10px; list-style: none; padding: 0; margin: 14px 0; }
+.heatmap-legend li { display: flex; align-items: center; gap: 9px; color: #b4c2aa; font-size: 11px; }
+.heatmap-legend li > i { width: 10px; height: 10px; border-radius: 2px; }
+.density-legend { height: 6px; border-radius: 3px; background: linear-gradient(to right, #e7ebe526, #e7ebe5); }
+.density-legend-labels { display: flex; justify-content: space-between; margin-top: 6px; color: #9eae93; font-size: 9px; }
+.heatmap-legend p { color: #94a28b; font-size: 10px; line-height: 1.6; margin-top: 10px; }

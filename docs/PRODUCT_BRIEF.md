@@ -60,6 +60,17 @@ The user requested a `rough work/` folder before the initial Git commit, then ch
 
 Application code, tests, source data, assignment references, reviewed findings, verification summaries, and selected import/reconciliation reports remain in their existing folders. The root requirements file covers ETL development and optional minimap regeneration; the full exploration environment remains reproducible from its separate requirements. Published documentation links to the curated investigation while identifying excluded evidence as local-only. The user will create a GitHub repository and provide its name before a push. Adding files to the staging area does not create a commit.
 
+## Fullscreen controls, 7 November 2026
+
+The user requested usable controls while the map is fullscreen. Overview now
+includes a compact, collapsible panel with the same heatmap layers, opacity, and
+reset controls as the sidebar, plus a legend for selected colours and relative
+density. Both instances share the current selection. Playback keeps its recorded
+timestamp scrubber, play/pause, restart, and all five speed choices inside the
+fullscreen container. Controls sit outside the draggable map canvas; entering or
+leaving fullscreen retains the selected layers and current playback state. These
+are requested UX additions; gameplay data and counting rules are unchanged.
+
 ## Required product capabilities
 
 | Assignment requirement | Expected user experience |
