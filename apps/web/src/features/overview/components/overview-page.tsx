@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { CalendarDays, ChevronRight, Crosshair, Grid2X2, Info, Layers2, Map as MapIcon, Play, PanelTop } from "lucide-react";
+import { CalendarDays, ChevronRight, Grid2X2, Info, Layers2, Map as MapIcon, Play, PanelTop } from "lucide-react";
 import { SelectField } from "@/components/ui/select-field";
 import type { PlaybackFrame } from "@/lib/gameplay-types";
 import { PlaybackControls } from "@/features/playback/components/playback-controls";
@@ -16,6 +16,7 @@ import { HeatmapOverlay } from "./heatmap-overlay";
 import { HeatmapControls } from "./heatmap-controls";
 import { FullscreenHeatmapPanel } from "./fullscreen-heatmap-panel";
 import { MatchStatistics } from "./match-statistics";
+import { MatchSelector } from "./match-selector";
 
 const EMPTY_FRAMES: PlaybackFrame[] = [];
 
@@ -70,10 +71,8 @@ export function OverviewPage() {
           {!data.date && <option value="">{data.loading ? "Loading dates…" : "No imported dates"}</option>}
           {data.dates.data?.dates.map((date) => <option key={date} value={date}>{formatDate(date)}</option>)}
         </SelectField>
-        <SelectField id="match" label="Match" icon={Crosshair} value={data.matchId} onChange={data.changeMatch} disabled={!data.matches.data?.matches.length}>
-          {!data.matchId && <option value="">{data.loading ? "Loading matches…" : "No imported matches"}</option>}
-          {data.matches.data?.matches.map((match, index) => <option key={match.id} value={match.id}>Match {String(index + 1).padStart(3, "0")} · {match.id.slice(0, 8)}</option>)}
-        </SelectField>
+        <MatchSelector key={`${data.mapId}:${data.date}`} matches={data.matches.data?.matches ?? []}
+          value={data.matchId} loading={data.dates.loading || data.matches.loading} onChange={data.changeMatch} />
         <div className="selection-footnote"><Info size={11} />Events on the selected UTC date</div>
       </section>
 

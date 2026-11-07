@@ -86,6 +86,19 @@ same timestamp. Simultaneous events remain together, and raw event totals are
 unchanged. The user authorized a local commit and explicitly prohibited pushing
 this update to GitHub until requested.
 
+## Match search
+
+The user requested a search bar within match selection and a commit afterward.
+The field filters the complete loaded list for the selected map and UTC date by
+match number, displayed label, or any part of the full match ID, ignoring case
+and surrounding whitespace. Match numbering remains tied to the original list.
+Searching does not change the active recording: if it falls outside the results,
+it remains explicitly available under "Currently selected". The field shows
+result counts, a no-results message, and a clear button. Changing map or date
+clears the search; switching Overview/Playback retains it. This extends the UX
+without changing API contracts or telemetry rules. The earlier no-push instruction
+remains in effect; this work is for a local commit.
+
 ## Required product capabilities
 
 | Assignment requirement | Expected user experience |

@@ -8,7 +8,7 @@ The ETL uses Spark for all Parquet reads and writes, including its test fixtures
 
 ## Using the tool
 
-1. Select a map, UTC date, and match in the left panel.
+1. Select a map, UTC date, and match in the left panel. Use the Match search field to filter by match number or any part of its ID, then choose a result from the dropdown.
 2. In Overview, enable traffic, kill, or death heatmap layers and adjust opacity. The basemap starts with no overlays selected.
 3. Switch to Playback to see recorded journeys and distinct event markers. The participant panel identifies humans and bots and lets you hide individual journeys.
 4. Play, pause, restart, or seek to a recorded timestamp. Choose one of the five speeds from 1x to 2x. Playback steps through recorded moments rather than interpolating movement.
