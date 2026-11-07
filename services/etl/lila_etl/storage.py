@@ -1,6 +1,7 @@
 """Date-organized uploads, immutable source archives, and per-run output files."""
 
 from datetime import datetime
+from concurrent.futures import ThreadPoolExecutor
 import hashlib
 import io
 import json
@@ -121,6 +122,24 @@ class ObjectStore:
         if path.stat().st_size != source['size_bytes']:
             raise ValueError(f"Landing object size changed: {source['object_key']}")
         return path
+
+    def download_files(self, sources: list[dict], directory: Path, *, from_landing=False):
+        """Overlap small S3 requests while keeping at most eight transfers active."""
+        download = self.download_landing if from_landing else self.download
+        # The MinIO client is thread-safe. Each source has its own local filename;
+        # parsing and source ordering still happen afterward on the main thread.
+        with ThreadPoolExecutor(max_workers=8) as workers:
+            transfers = [workers.submit(download, source, directory) for source in sources]
+            for transfer in transfers:
+                transfer.result()
+
+    def upload_files(self, files: list[tuple[Path, str]]):
+        """Upload independent immutable objects; surface any transfer failure."""
+        with ThreadPoolExecutor(max_workers=8) as workers:
+            transfers = [workers.submit(self.client.fput_object, self.bucket, key, str(path),
+                                        content_type='application/octet-stream') for path, key in files]
+            for transfer in transfers:
+                transfer.result()
 
     def read_landing_manifest(self) -> dict:
         try:

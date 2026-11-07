@@ -110,6 +110,16 @@ class PipelineTests(unittest.TestCase):
                 with psycopg.connect(settings.database_url) as connection:
                     self.assertEqual(connection.execute('SELECT count(*) FROM events').fetchone()[0], 9)
                     self.assertEqual(connection.execute("SELECT count(*) FROM etl_runs WHERE status='failed'").fetchone()[0], 1)
+
+                # A failed worker must report the source hash error, rather than
+                # letting a partially downloaded batch reach publication.
+                corrupt_key = f"raw/{'0' * 64}/2026-02-12/{HUMAN}_test-corrupt.nakama-0"
+                store.client.fput_object(store.bucket, corrupt_key, str(first))
+                with self.assertRaisesRegex(ValueError, 'no longer match its hash'):
+                    run_pipeline(settings)
+                with psycopg.connect(settings.database_url) as connection:
+                    self.assertEqual(connection.execute('SELECT count(*) FROM events').fetchone()[0], 9)
+                    self.assertEqual(connection.execute("SELECT count(*) FROM etl_runs WHERE status='failed'").fetchone()[0], 2)
         finally:
             objects = [DeleteObject(item.object_name) for item in store.client.list_objects(store.bucket, recursive=True)]
             errors = list(store.client.remove_objects(store.bucket, objects))

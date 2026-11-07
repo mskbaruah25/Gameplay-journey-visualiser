@@ -54,7 +54,7 @@ def run_pipeline(settings, rebuild=False):
                 rebuild = rebuild or (previous is not None and previous['rule_version'] != RULE_VERSION)
                 affected = set()
                 canonical = {}
-                downloaded = set()
+                new_sources = []
                 # The original folder date determines first-copy order, not the upload time.
                 for source in sources:
                     source['collection_date'] = collection_date(source['source_path'], settings.dataset_year)
@@ -68,8 +68,7 @@ def run_pipeline(settings, rebuild=False):
                         source['source_schema'] = old['source_schema']
                     else:
                         # Verify every new object's bytes, including later copies.
-                        store.download(source, directory)
-                        downloaded.add(source['id'])
+                        new_sources.append(source)
                         affected.add(source['expected_match_id'])
                     first = canonical.setdefault(source['content_hash'], source)
                     if (first['expected_match_id'], first['expected_user_id']) != (source['expected_match_id'], source['expected_user_id']):
@@ -86,12 +85,16 @@ def run_pipeline(settings, rebuild=False):
                     'affected_matches': sorted(affected),
                     'processed_rows': 0,
                 })
+                # Verify every new object's bytes, including excluded file copies,
+                # and fetch retained originals needed for affected matches once.
+                downloads = {row['id']: row for row in new_sources}
+                downloads.update({row['id']: row for row in selected})
+                logger.info('Downloading %s Raw files for validation and processing.', len(downloads))
+                store.download_files(list(downloads.values()), directory)
                 if selected:
                     input_directory = directory / 'recordings'
                     input_directory.mkdir()
                     for source in selected:
-                        if source['id'] not in downloaded:
-                            store.download(source, directory)
                         # Group retained originals for one Spark folder read.
                         path = directory / f"{source['id']}.parquet"
                         path.replace(input_directory / path.name)

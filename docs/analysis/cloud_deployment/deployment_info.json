@@ -1,0 +1,32 @@
+{
+  "verified_on": "2026-11-07",
+  "public_url": "https://gameplay-journey-visualiser.vercel.app",
+  "vercel": {
+    "plan": "Hobby",
+    "project_id": "prj_cxmduLVItYGlkHNc2dr785NKGplu",
+    "region": "sin1",
+    "initial_deployment_id": "dpl_X1P1R2DN9GUAYjWNZ7BLK8C6KmG8",
+    "initial_app_commit": "721bf71e180a50fc703182f41e2c92696184fbcd",
+    "initial_build_state": "READY",
+    "node_version": "22.x"
+  },
+  "neon": {
+    "plan": "free",
+    "project_id": "cool-boat-34427470",
+    "branch_id": "br-floral-sky-a1vv7eix",
+    "branch_name": "production",
+    "database": "lila_gameplay",
+    "postgres_version": 17,
+    "region": "aws-ap-southeast-1",
+    "private_bucket": "lila-gameplay",
+    "database_size_bytes": 58228736
+  },
+  "verification": {
+    "etl_tests_passed": 10,
+    "public_api_tests_passed": 8,
+    "browser_console_errors": 0,
+    "browser_console_warnings": 0,
+    "event_snapshot_matches_local": true
+  },
+  "ingestion": "manual Docker job; no scheduled cloud ingestion"
+}

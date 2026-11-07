@@ -1,0 +1,17 @@
+{
+  "event_counts": {
+    "BotKill": 2410,
+    "BotKilled": 699,
+    "BotPosition": 21712,
+    "Kill": 3,
+    "Killed": 3,
+    "KilledByStorm": 39,
+    "Loot": 12866,
+    "Position": 51284
+  },
+  "event_ids_md5": "86708a40de5fcffc97abd976522bd31f",
+  "event_values_md5": "6f39fef6eda20a60edc82b5cde12ffec",
+  "events": 89016,
+  "matches": 796,
+  "participants": 1242
+}

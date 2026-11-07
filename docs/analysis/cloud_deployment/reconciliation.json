@@ -1,0 +1,11 @@
+{
+  "checks": {
+    "events": true,
+    "event_ids_md5": true,
+    "event_values_md5": true,
+    "matches": true,
+    "participants": true,
+    "event_counts": true
+  },
+  "all_passed": true
+}

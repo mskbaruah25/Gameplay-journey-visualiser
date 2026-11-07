@@ -64,14 +64,15 @@ def promote_landing_files(store, settings, directory: Path, report: dict):
 
     if pending:
         directory.mkdir()
-        for source in pending:
-            store.download_landing(source, directory)
+        logger.info('Downloading %s new Landing files.', len(pending))
+        store.download_files(pending, directory, from_landing=True)
         spark = start_spark(settings.spark_master, settings.spark_driver_memory)
         try:
             spark.sparkContext.setLogLevel('WARN')
             dates = sample_event_dates(spark, directory)
         finally:
             spark.stop()
+        archives = []
         for source in pending:
             sampled_date = dates.get(source['id'])
             if sampled_date is None:
@@ -80,9 +81,8 @@ def promote_landing_files(store, settings, directory: Path, report: dict):
             content_hash = file_hash(path)
             raw_key = f"raw/{content_hash}/{source['source_path']}"
             if raw_key not in raw_keys:
-                store.client.fput_object(store.bucket, raw_key, str(path), content_type='application/octet-stream')
+                archives.append((path, raw_key))
                 raw_keys.add(raw_key)
-                report['archived_files'] += 1
             receipts[source['object_key']] = {
                 'rule_version': LANDING_RULE_VERSION,
                 'etag': source['etag'], 'size_bytes': source['size_bytes'],
@@ -91,6 +91,9 @@ def promote_landing_files(store, settings, directory: Path, report: dict):
                 'date_status': 'matched' if source['folder_date'] == sampled_date else 'mismatch',
             }
             report['checked_files'] += 1
+        logger.info('Archiving %s original files in Raw.', len(archives))
+        store.upload_files(archives)
+        report['archived_files'] = len(archives)
         # Archive/check receipts are independent of database publication. A
         # downstream failure can safely reuse them when the run is retried.
         store.write_landing_manifest(manifest)

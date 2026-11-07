@@ -2,7 +2,18 @@
 
 A Next.js and PostgreSQL application for exploring the supplied gameplay recordings. The backend and ETL implementation is now present: six application tables, MinIO storage, Python/Spark ingestion, read-only APIs, UTC date filtering, participant journeys, timestamp-step playback, event markers, metrics, and heatmap grids.
 
+[Open the hosted tool](https://gameplay-journey-visualiser.vercel.app). The web app runs on Vercel Hobby; Neon Free provides PostgreSQL and private S3-compatible storage. Local Docker containers are only needed for development or running ingestion.
+
 The ETL uses Spark for all Parquet reads and writes, including its test fixtures. Supporting notebooks, experimental SQL, and analysis tables are available in [the exploration folder](rough%20work/README.md). PyArrow is limited to that optional exploration environment.
+
+## Using the tool
+
+1. Select a map, UTC date, and match in the left panel.
+2. In Overview, enable traffic, kill, or death heatmap layers and adjust opacity. The basemap starts with no overlays selected.
+3. Switch to Playback to see recorded journeys and distinct event markers. The participant panel identifies humans and bots and lets you hide individual journeys.
+4. Play, pause, restart, or seek to a recorded timestamp. Choose one of the five speeds from 1x to 2x. Playback steps through recorded moments rather than interpolating movement.
+
+Filters show only the supplied recordings for that selection. Counts describe retained event labels and position samples; they do not imply a complete lobby or verified killer/victim relationships.
 
 ## Start locally
 
@@ -51,9 +62,13 @@ The current development preview on [port 3000](http://localhost:3000) is also co
 
 See [the development guide](docs/DEVELOPMENT.md) for environment settings, ingestion commands, incremental behavior, testing, API routes, and MinIO image details. The [architecture notes](ARCHITECTURE.md) explain the data flow and decisions. The [product brief](docs/PRODUCT_BRIEF.md) retains the assignment requirements and working choices.
 
-Verified locally: all three container images built, the complete Compose startup succeeded, all eight ETL tests and all eight API tests passed inside the container setup, and TypeScript/build/browser checks passed. The import published 89,016 retained events across 796 matches. Storage restarts preserved the data; unchanged uploads and reruns processed zero new files/rows. See [initial verification](docs/analysis/backend_verification/README.md) and [Spark-only ETL verification](docs/analysis/spark_etl_refactor/README.md). No Neon changes or public deployment have been performed.
+New cloud uploads appear after a successful ETL run; no automatic ingestion schedule is configured.
+
+Verified locally: all three container images built, the complete Compose startup succeeded, the ETL and eight API tests passed inside the container setup, and TypeScript/build/browser checks passed. The import published 89,016 retained events across 796 matches. Storage restarts preserved the data; unchanged uploads and reruns processed zero new files/rows. See [initial verification](docs/analysis/backend_verification/README.md) and [Spark-only ETL verification](docs/analysis/spark_etl_refactor/README.md).
 
 The subsequent Landing update passed all 10 ETL tests and eight API checks. All 1,243 supplied files were sampled, unchanged reruns reused the results without Spark, and published gameplay checksums were preserved. See [Landing verification](docs/analysis/landing_ingestion/README.md).
+
+Cloud verification also passed all 10 ETL tests and eight public API checks. Neon contains the same 89,016 events, 796 matches, and 1,242 recorded participants, with identical event IDs and complete stored values. All three maps, heatmap controls, participant visibility, and playback were checked in the hosted browser. See [deployment evidence](docs/analysis/cloud_deployment/README.md).
 
 ## Data conventions
 

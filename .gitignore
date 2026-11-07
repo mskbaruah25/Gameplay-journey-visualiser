@@ -19,5 +19,11 @@ node_modules/
 /rough work/verification/
 .ipynb_checkpoints/
 
+# Vercel's local project links and pulled environment files.
+.vercel/
+
+# Generated browser automation snapshots; selected evidence lives in rough work.
+.playwright-mcp/
+
 # Keep the deployment operations guide local only.
 /docs/DEPLOYMENT.md
