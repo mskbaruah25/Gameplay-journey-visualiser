@@ -36,6 +36,14 @@ Use `5a081fe4…` on 10 February for the separate 14:38 storm-death check.
 These examples were checked against the public API; recorded labels do not
 establish unique incidents, opponent identities, or a complete lobby.
 
+## Local-only deployment guide, 8 November 2026
+
+The user requested removing the deployment operations guide from the published
+production branch and from the architecture document. Preserve a local copy
+under the ignored rough-work notes folder. Remove published links and prevent
+the guide from being added to Git again. This requirement concerns the guide;
+the hosted application remains available.
+
 ## Production release branch, 8 November 2026
 
 The user requested restoring and committing the stashed README on
