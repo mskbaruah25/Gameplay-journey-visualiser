@@ -1,27 +1,37 @@
 # Gameplay Journey Visualizer
 
-A Next.js and PostgreSQL application for exploring the supplied gameplay recordings. The backend and ETL implementation is now present: six application tables, MinIO storage, Python/Spark ingestion, read-only APIs, UTC date filtering, participant journeys, timestamp-step playback, event markers, metrics, and heatmap grids.
+A browser tool for level designers to explore LILA BLACK player journeys, combat, loot, and storm deaths across three maps.
 
-[Open the hosted tool](https://gameplay-journey-visualiser.vercel.app). The web app runs on Vercel Hobby; Neon Free provides PostgreSQL and private S3-compatible storage. Local Docker containers are only needed for development or running ingestion.
+**[Open the hosted tool](https://gameplay-journey-visualiser.vercel.app)** — no sign-in required.
 
-The ETL uses Spark for all Parquet reads and writes, including its test fixtures. Supporting notebooks, experimental SQL, and analysis tables are available in [the exploration folder](rough%20work/README.md). PyArrow is limited to that optional exploration environment.
+The supplied dataset contains 1,243 files. After excluding one identical file copy, the tool serves **89,016 events across 796 matches and 1,242 match-scoped participants**. These are supplied recordings, not complete lobbies.
 
-## Using the tool
+## Tech Stack
 
-1. Select a map, UTC date, and match in the left panel. Use the Match search field to filter by match number or any part of its ID, then choose a result from the dropdown.
-2. In Overview, enable traffic, kill, or death heatmap layers and adjust opacity. The basemap starts with no overlays selected.
-3. Switch to Playback to see recorded journeys and distinct event markers. The participant panel identifies humans and bots and lets you hide individual journeys.
-4. Play, pause, restart, or seek to a recorded timestamp. Choose one of the five speeds from 1x to 2x. Playback steps through recorded moments rather than interpolating movement.
+| Component | Technology |
+| --- | --- |
+| Web interface and API | Next.js, React, TypeScript |
+| Database | PostgreSQL on Neon Free |
+| Data ingestion | Python and Apache Spark |
+| Object storage | Neon Object Storage in production; MinIO locally |
+| Hosting and local runtime | Vercel Hobby; Docker Compose |
 
-Use the map's fullscreen button for a larger view. Overview includes a collapsible heatmap panel with layer filters, opacity, reset, and a colour/density legend. Playback keeps the timestamp scrubber and transport controls at the bottom. Selections and playback state persist when fullscreen closes.
+Ingestion runs separately as a manual container job. The hosted tool does not require local containers to remain running.
 
-Both views also include a collapsible on-map legend. The Playback scrubber shows elapsed time above its handle and labels its position as `Event x of y`; each timeline event groups all records at the same timestamp.
+## Feature Walkthrough
 
-Filters show only the supplied recordings for that selection. Counts describe retained event labels and position samples; they do not imply a complete lobby or verified killer/victim relationships.
+1. **Choose a recording:** select a map, UTC date, and match. Search by match number or ID, check recorded human/bot counts, or filter for matches with multiple recorded participants.
+2. **Explore Overview:** enable traffic, kill, or death heatmaps, adjust opacity, and review selected-match statistics. The map starts without overlays.
+3. **Open Playback:** follow individual journeys, distinguish humans from bots, and toggle participant visibility. Separate markers identify kills, deaths, loot, and storm deaths.
+4. **Control time:** play, pause, restart, or seek. Choose 1x, 1.25x, 1.5x, 1.75x, or 2x. Playback advances through recorded timestamps; simultaneous records stay together.
+5. **Inspect combat and events:** click timeline indicators or use **Jump to combat** to seek to a kill, death, or storm death. Select a participant or event marker to pause and inspect its recorded actor, event label, elapsed/UTC time, and world coordinates. Simultaneous records can be inspected individually.
+6. **Expand the map:** collapse the sidebar or statistics, toggle legends, or enter fullscreen. Heatmap controls, playback controls, combat navigation, and marker inspection remain available in their respective fullscreen views.
 
-## Start locally
+## Local Setup
 
-Requires Docker Desktop with Compose 2.20+ and enough free disk space for the build images. The first build compiles the pinned MinIO source release and installs Spark.
+**Requirements:** Docker Desktop with Compose 2.20+, the supplied `player_data/` folder, and free disk space for the build images. The first build compiles MinIO and installs Spark.
+
+Run from the repository root:
 
 ```sh
 cp .env.example .env
@@ -30,58 +40,59 @@ docker compose run --rm seed
 docker compose run --rm etl
 ```
 
-Open [the local application](http://localhost:3000) after ingestion succeeds. In this working directory, the saved gitignored `.env` uses [port 3101](http://localhost:3101) for the web app and ports 19002/19003 for MinIO, avoiding existing local services. The MinIO console is at [localhost:9001](http://localhost:9001). The example environment enables local PostgreSQL on port 55432. For Neon, configure the pooled connection as `DATABASE_URL`, the direct connection as `DATABASE_URL_UNPOOLED`, and leave `COMPOSE_PROFILES` empty. The local database is a development substitute, not a change to the deployed database choice.
+- **Application:** [localhost:3000](http://localhost:3000)
+- **MinIO console:** [localhost:9001](http://localhost:9001)
+- `seed` uploads the supplied files to Landing; `etl` processes and publishes them.
+- Repeating an unchanged upload/import does not duplicate events.
 
-`seed` is an optional demo upload. In a cloud workflow, upload originals directly to `landing/<date>/<recording>` in MinIO/S3, then run ETL. Spark compares one sampled UTC event date per file with the folder date, reports mismatches, and archives unchanged bytes under `raw/<sha256>/<source-path>`. Processed rows use their actual UTC dates. See [Landing ingestion details](docs/DEVELOPMENT.md#ingestion-commands).
+## Environment Variables
 
-## Code structure
+The supplied [`.env.example`](.env.example) contains working local defaults.
 
-```text
-apps/web/src/app/api/            Thin Next.js HTTP handlers
-apps/web/src/server/             SQL queries, connection pool, input validation
-apps/web/src/features/           Overview, playback, heatmap and journey components
-apps/web/src/lib/                Shared API contracts and browser request helper
-database/migrations/            Six-table SQL schema and indexes
-services/etl/lila_etl/           Object storage, source inspection, Spark, publication
-services/etl/tests/              Transformation and isolated integration tests
-infrastructure/minio/           Pinned source-built storage image
-config/maps.json                Map origins, scales, assets, and dimensions
-player_data/                    Unchanged supplied data and minimaps
-docs/                           Requirements, reviewed audits, development guide
-rough work/                     Supporting notebooks, experimental SQL, evidence
-```
+| Variable | Purpose |
+| --- | --- |
+| `COMPOSE_PROFILES` | `local` starts local PostgreSQL; leave empty when using Neon. |
+| `DATABASE_URL` | Web database connection; use a pooled URL for Neon. |
+| `DATABASE_URL_UNPOOLED` | Direct Neon connection for migrations/ETL; empty for local PostgreSQL. |
+| `POSTGRES_PASSWORD` | Password for local PostgreSQL. |
+| `MINIO_ROOT_USER`, `MINIO_ROOT_PASSWORD` | Local object-storage credentials. |
+| `S3_BUCKET` | Bucket containing Landing, Raw, and processed data. |
+| `S3_ENDPOINT`, `S3_ACCESS_KEY`, `S3_SECRET_KEY`, `S3_SECURE` | Override Compose defaults for cloud S3-compatible storage. |
+| `WEB_PORT`, `POSTGRES_PORT`, `MINIO_API_PORT`, `MINIO_CONSOLE_PORT` | Host ports; defaults: 3000, 55432, 9000, 9001. |
 
-## Development and verification
+Keep credentials in Git-ignored environment files. See [development](docs/DEVELOPMENT.md) for host-run setup and ingestion options.
 
-The root `requirements.txt` installs the ETL development dependencies and Pillow for optional minimap regeneration. The complete original exploration dependency list is retained in `rough work/requirements.txt`.
+## Data Conventions
+
+- **Coordinates:** map world X/Z using each map's origin and scale, flip the image's vertical axis, and preserve its actual aspect ratio. Y is elevation.
+- **Time and journeys:** interpret source timestamp integers as seconds and filter by UTC event date. Retain post-death positions, generate no intermediate movement, and break trails across gaps longer than 15 seconds.
+- **Counting:** retain the first identical whole-file copy and preserve repeated rows within retained files. Each Loot row counts as one item. Kill labels are credited to their recorded actor. Combat totals count retained labels, not verified unique incidents.
+- **Coverage:** classify humans/bots by ID format and scope identities to matches. Traffic heatmaps count position samples, not time spent. Opponent identities, extraction outcomes, and storm boundaries are not inferred.
+
+## Verification
+
+With Node.js 22 installed, run:
 
 ```sh
 npm ci
 npm run typecheck
 npm run build
-.venv/bin/python scripts/test_etl.py
 ```
 
-The current development preview on [port 3000](http://localhost:3000) is also connected to local PostgreSQL. For a host-run web app, put `DATABASE_URL` in the gitignored `apps/web/.env.local` and use `npm run dev`. Restart that process when changing database targets. The host URL for the example local database is `postgresql://lila:lila_local_only@127.0.0.1:55432/lila`.
+After importing the supplied dataset and starting the local application:
 
-See [the development guide](docs/DEVELOPMENT.md) for environment settings, ingestion commands, incremental behavior, testing, API routes, and MinIO image details. The [architecture notes](ARCHITECTURE.md) explain the data flow and decisions. The [product brief](docs/PRODUCT_BRIEF.md) retains the assignment requirements and working choices.
+```sh
+LILA_API_URL=http://127.0.0.1:3000 npm run test:api
+```
 
-New cloud uploads appear after a successful ETL run; no automatic ingestion schedule is configured.
+Adjust the URL if `WEB_PORT` changes. ETL test commands and recorded verification results are in the [development guide](docs/DEVELOPMENT.md#verification).
 
-Verified locally: all three container images built, the complete Compose startup succeeded, the ETL and eight API tests passed inside the container setup, and TypeScript/build/browser checks passed. The import published 89,016 retained events across 796 matches. Storage restarts preserved the data; unchanged uploads and reruns processed zero new files/rows. See [initial verification](docs/analysis/backend_verification/README.md) and [Spark-only ETL verification](docs/analysis/spark_etl_refactor/README.md).
+## Repository Guide
 
-The subsequent Landing update passed all 10 ETL tests and eight API checks. All 1,243 supplied files were sampled, unchanged reruns reused the results without Spark, and published gameplay checksums were preserved. See [Landing verification](docs/analysis/landing_ingestion/README.md).
-
-Cloud verification also passed all 10 ETL tests and eight public API checks. Neon contains the same 89,016 events, 796 matches, and 1,242 recorded participants, with identical event IDs and complete stored values. All three maps, heatmap controls, participant visibility, and playback were checked in the hosted browser. See [deployment evidence](docs/analysis/cloud_deployment/README.md).
-
-## Data conventions
-
-- Source timestamps are interpreted as seconds; filtering dates are UTC event dates.
-- Keep the first byte-identical file copy. Preserve repeated rows inside retained files.
-- Each retained Loot row counts as one item. Combat totals count retained labels while repeated-combat counting remains undecided.
-- Participant identity is scoped to a match. Credit kill labels to the recorded actor.
-- Plot supplied positions after death labels. No source-verified opponent identities are inferred.
-- Playback advances between recorded timestamp groups; no intermediate positions are generated.
-- Heatmaps count recorded events; traffic counts sampled positions rather than duration.
-
-The original assignment and source data remain in their existing folders. The curated exploration is included under `rough work/`; backups, rough Word notes, and verbose development output remain Git-ignored. The whole folder is excluded from Docker builds. Saved notebook outputs are preserved; their input and export paths have been updated for the move.
+- `apps/web/` — interface, read-only APIs, and database queries.
+- `services/etl/` — ingestion and tests; `database/` — SQL migrations.
+- `config/maps.json` — coordinate transforms and map dimensions.
+- `player_data/` — unchanged source data and minimaps.
+- [ARCHITECTURE.md](ARCHITECTURE.md) — data flow, mapping, assumptions, and tradeoffs.
+- [Data nuances](docs/DATA_NUANCES.md) — observed issues and handling decisions.
+- [Exploration](rough%20work/README.md) — notebooks, experimental SQL, and supporting evidence.
