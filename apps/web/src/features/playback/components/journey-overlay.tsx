@@ -50,8 +50,8 @@ export function JourneyOverlay({ frames, index, participants, hidden }: Props) {
         {samples.map((sample) => <circle key={sample.id} cx={sample.minimapX * 1000} cy={sample.minimapY * 1000} r={2} fill={color} opacity={0.45} />)}
         <g transform={`translate(${last.minimapX * 1000},${last.minimapY * 1000})`}>
           <title>{participant.userId}{last.postDeathPosition ? " · supplied post-death position" : ""}</title>
-          {participant.actorType === "human" ? <circle r={7} fill={color} stroke="#10160f" strokeWidth={2} />
-            : <rect x={-6} y={-6} width={12} height={12} transform="rotate(45)" fill={color} stroke="#10160f" strokeWidth={2} />}
+          {participant.actorType === "human" ? <circle r={7} fill={color} stroke="var(--map-bg)" strokeWidth={2} />
+            : <rect x={-6} y={-6} width={12} height={12} transform="rotate(45)" fill={color} stroke="var(--map-bg)" strokeWidth={2} />}
         </g>
       </g>;
     })}

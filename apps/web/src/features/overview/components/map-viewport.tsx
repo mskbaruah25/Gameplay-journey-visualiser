@@ -81,7 +81,7 @@ export function MapViewport({ map, layers, mode = "overview", children, statusTe
           {children}
         </div>
       </div>
-      <div className="compass" aria-label="Map top"><span>N</span><svg viewBox="0 0 24 30" aria-hidden="true"><path d="M12 1 21 27 12 21 3 27Z" fill="currentColor"/><path d="M12 1v20l9 6Z" fill="#5c665b"/></svg></div>
+      <div className="compass" aria-label="Map top"><span>N</span><svg viewBox="0 0 24 30" aria-hidden="true"><path d="M12 1 21 27 12 21 3 27Z" fill="currentColor"/><path d="M12 1v20l9 6Z" fill="var(--subtle)"/></svg></div>
       <div className="map-tools" aria-label="Map controls">
         <button aria-label="Zoom in" title="Zoom in" onClick={() => changeZoom(0.25)} disabled={zoom === 3}><Plus size={17} /></button>
         <span className="zoom-value">{Math.round(zoom * 100)}%</span>

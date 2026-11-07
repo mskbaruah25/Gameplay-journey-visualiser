@@ -99,6 +99,18 @@ clears the search; switching Overview/Playback retains it. This extends the UX
 without changing API contracts or telemetry rules. The earlier no-push instruction
 remains in effect; this work is for a local commit.
 
+## Graphite + Blue theme trial on UI-1
+
+The user selected Graphite + Blue as an alternative to the military-green
+interface and requested trying it on branch `UI-1`. Use neutral charcoal
+surfaces (`#101218` background, `#1B1F29` panels), light text, and blue
+(`#5B8DEF`) for actions, focus, selected navigation, and timeline controls.
+Shared CSS colour roles cover normal and fullscreen Overview/Playback,
+including search, filters, legends, and statistics. Gameplay category colours,
+marker shapes, supplied map images, coordinate mapping, and counting semantics
+remain independent of interface colours. This is a local visual trial; it does
+not authorize pushing or deploying the theme to the hosted app.
+
 ## Required product capabilities
 
 | Assignment requirement | Expected user experience |
