@@ -17,12 +17,36 @@ lists, and tables; their font is controlled by the viewer, so GitHub rendering
 cannot enforce Times New Roman. Draft the README first, keeping detailed
 architecture, audits, and operational evidence in their linked documents.
 
+For the architecture draft, the user requested their own reassuring style: guide
+the reader through a journey together, explaining each step and its purpose.
+Their selected reference is [their Medium article](https://medium.com/@mskbaruah/introduction-to-data-engineering-using-azure-and-databricks-part-ii-e4438390c72d).
+Keep the concise structure and technical accuracy while using this shared voice.
+
+Use professional, precise headings (for example, "The Data Analysis"). Keep
+the reassuring shared-journey voice in the body, with descriptive section titles.
+
+Keep the architecture draft focused on the system's flow, reasoning, coordinate
+mapping, and data assumptions. The user specifically requested removing the
+hosting region and similarly unnecessary operational details from this document.
+
 The user subsequently requested that the README describe the finished product,
 with all implemented features presented together. They plan to create a new
 production branch, merge the features, and make that version live. Remove
 branch-specific and local-only feature qualifiers from the submission README.
 This is the intended release documentation state, not evidence that the merge
 or deployment has occurred, and does not authorize performing those actions.
+
+## Insights draft, 8 November 2026
+
+The user requested a structured, precise investigation narrative in their
+reassuring shared-journey style: link the notebooks, emphasize the data nuances,
+explain experiments and accepted decisions, and connect them to system design.
+The draft also retains the assignment's three evidence-backed gameplay insights.
+Separate observed patterns from proposed level-design experiments and target
+metrics; these suggestions do not authorize gameplay or application changes.
+Additional source checks for this write-up use the accepted retained-file policy
+and remain in the optional exploration folder. Original notebook outputs remain
+unchanged, with their historical counting scopes identified.
 
 ## Guided README walkthrough, 8 November 2026
 

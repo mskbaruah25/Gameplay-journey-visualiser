@@ -1,25 +1,49 @@
-# Player journey tool architecture
+# Architecture
 
-Next.js serves the interface and read-only JSON API on Vercel Hobby. Neon Free hosts PostgreSQL and private S3-compatible object storage in Singapore. Python and Spark perform ingestion in a separate, manually run container. Local Docker Compose provides MinIO, optional PostgreSQL, bucket initialization, migration, ETL, and the application; demo upload is optional. The hosted interface works independently of these local containers.
+Let’s follow a gameplay recording from its source file to the map. We prepare the data separately, so a level designer can open the tool and start exploring.
 
-## Data flow
+## Choosing Our Stack
 
-Uploaders write `landing/<date>/<recording>` objects directly to S3/MinIO. ETL samples one non-null timestamp per new object with Spark, applies the accepted seconds/UTC interpretation, and compares its date with the folder. Mismatches are logged and retained. It hashes and archives the exact downloaded bytes under `raw/<sha256>/<source-path>`. A bucket-local manifest records object versions and sample results for retries; it does not certify every row's date. The optional local loader only populates Landing.
+- **Next.js, React, TypeScript:** we keep the interface/API together and share typed contracts. SVG overlays draw journeys, events, and heatmaps.
+- **Neon PostgreSQL:** related tables organize maps, matches, participants, and events. Indexes make filtering efficient.
+- **Python/Spark:** one batch pipeline validates and transforms Parquet. Private S3-compatible storage retains originals and processed files.
+- **Deployment:** Vercel hosts the app; Neon provides database/storage. Docker Compose supports development and separate ingestion. The hosted tool works independently of our development machine.
 
-ETL freezes the Raw file inventory, verifies hashes, and keeps the earliest source-folder copy of identical content. Spark reads downloaded originals in one batch, captures their physical Parquet row indexes, and joins source metadata. It recovers the source millisecond-labeled integers with `unix_millis` before applying the accepted seconds interpretation. Spark validates and transforms events and writes processed Parquet partitioned by each row's UTC date. New files cause affected matches to be reconstructed from all their retained recordings.
+## Following the Data
 
-PostgreSQL has six application tables: `maps`, `matches`, `match_participants`, `events`, `source_files`, and `etl_runs`. Deterministic content/row IDs preserve repeated payloads and safe reruns. Spark writes temporary CSV transport files with UTC timestamps and stops before loading. PostgreSQL streams those files through `COPY` into a temporary staging table, publishing affected matches in one transaction. Failures leave prior events unchanged. An advisory lock prevents competing imports. Source paths and run versions preserve traceability.
+`Parquet → Landing → Raw archive → Spark → PostgreSQL → Next.js API → Browser`
 
-## Coordinate and playback rules
+1. **First, receive the files.** Uploads enter Landing. We archive originals unchanged so we can revisit them and trace each record’s source.
+2. **Next, prepare the records.** Spark decodes labels, validates fields, and calculates coordinates. We keep the earliest identical file copy; file hashes and original row numbers preserve event identities. Processed Parquet follows UTC event dates.
+3. **Then, publish the changes.** We rebuild affected matches and skip unchanged inputs. Updates commit together, so a failed import leaves existing events intact.
+4. **Now, display the recording.** APIs return metrics, heatmap grids, and timestamp-grouped events from consistent database snapshots. Playback uses loaded records without requesting data for every frame.
 
-World X/Z locate the point; Y remains elevation. For each map, subtract its X/Z origin and divide by its world scale. Image X is the normalized X fraction; image Y is one minus the normalized Z fraction. Draw these fractions against the actual image aspect ratio, rather than assuming 1024 square pixels. Native sizes are 4320 square, 2160 by 2158, and 9000 square.
+## Placing a Player on the Map
 
-Use the original timestamp integers as seconds and derive event dates explicitly in UTC. One playback frame contains every event at one timestamp. Playback advances through frames, with no generated intermediate positions. Positions after death labels remain visible. Human/bot IDs are scoped to a match, and markers distinguish them. The date filter selects event rows; omitting it from the API returns the full available match. Elapsed time uses the full match's first available event.
+We use world **X/Z** for the top-down position. **Y remains elevation.** Each map’s origin and scale come from [config/maps.json](config/maps.json):
 
-## Decisions and tradeoffs
+```text
+u = (x − origin_x) / scale; v = (z − origin_z) / scale
+image_x = u × rendered_width; image_y = (1 − v) × rendered_height
+```
 
-- Keep original recordings, count each retained Loot row as one item, and credit kill labels to their recorded actor. No verified opponent link or respawn state is invented. Repeated combat counting remains unresolved; current totals explicitly count retained labels.
-- Calculate metrics and heatmap grids directly from indexed events initially. Add rebuildable summary tables only if measurements justify them. Playback and overview read coherent database snapshots and use uncached API responses.
-- Preserve raw originals while publishing only the first whole-file copy. Reject conflicting replacement snapshots at one source path until a replacement policy exists; support additional recordings under new paths.
-- Transfer original files through at most eight S3 client threads, then use Spark for all Parquet reads/writes. This avoids S3A connector dependencies and serial cloud round trips. Physical row indexes preserve UUIDv5 event identities, including repeated payloads. Processed folders are per-run affected-match snapshots, not a globally additive export.
-- Keep the pinned historical MinIO source build for local reproducibility; use Neon Object Storage for hosting through the same S3 client. The API has a read-only pooled database role; migration/ETL uses the owner's direct connection. Hosting stays on free plans, with public exploration and manual ingestion. No scheduled Spark service or sign-in flow is configured.
+The `1 − v` flips the vertical axis to match the image’s top-left origin. For example, Ambrose Valley’s `(−301.45, −355.55)` becomes approximately `(78, 890)` on a 1024×1024 reference image. We use the supplied maps’ actual aspect ratios when drawing overlays.
+
+## Reading the Data Carefully
+
+Before interpreting what we see, we need a few conventions:
+
+- **Time:** we treat source integers as epoch seconds despite their millisecond label; recorded spans of 13–890 seconds support this choice. UTC event dates drive filters, including recordings that cross midnight.
+- **Identity and counts:** UUIDs identify humans; numeric IDs identify bots within matches. Kill credit follows the recorded actor. Each Loot row counts as one item. Repeated combat rows remain included; unique-incident interpretation is unresolved.
+- **Playback:** simultaneous records stay together. We skip between timestamps, avoid interpolation, break trails across gaps over 15 seconds, and retain post-death positions without inferring respawn.
+- **Coverage:** we show recorded participants, not complete lobbies. Traffic counts samples, not time spent. Opponents, extraction outcomes, and storm boundaries remain unknown.
+
+## Tradeoffs We Accepted
+
+| Choice | What we gain / accept |
+| --- | --- |
+| Spark batch processing | One repeatable pipeline; extra runtime overhead for this small dataset. |
+| Indexed events and uncached APIs | Fresh results without summary synchronization; more query work as data grows. |
+| Free hosting and manual ingestion | Independent web availability at low cost; uploads need an ETL run. |
+
+The observations behind these choices are in [data nuances](docs/DATA_NUANCES.md).

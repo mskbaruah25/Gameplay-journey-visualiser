@@ -1,0 +1,81 @@
+{
+  "method": {
+    "policy": "Earliest byte-identical file copy; preserve every row within retained files.",
+    "grid": "32 by 32, zero-based cells, image origin top-left; same method as exp.ipynb section 13.",
+    "time": "Original timestamp integers as seconds, relative to the earliest retained record in each match.",
+    "scope": "Descriptive source checks for the INSIGHTS draft; design actions are proposals, not measured outcomes."
+  },
+  "dataset": {
+    "supplied_files": 1243,
+    "supplied_rows": 89104,
+    "retained_files": 1242,
+    "retained_events": 89016,
+    "matches": 796,
+    "event_counts": {
+      "Position": 51284,
+      "Loot": 12866,
+      "BotKilled": 699,
+      "KilledByStorm": 39,
+      "BotKill": 2410,
+      "BotPosition": 21712,
+      "Kill": 3,
+      "Killed": 3
+    }
+  },
+  "traffic": {
+    "most_visited_human_cell_ambrose": {
+      "map_id": "AmbroseValley",
+      "actor_type": "human",
+      "cell_x": 16,
+      "cell_y": 17,
+      "movement_samples": 608,
+      "recorded_journeys": 109,
+      "matches": 109,
+      "map_actor_journeys": 554,
+      "world_x_min": 80.0,
+      "world_x_max": 108.125,
+      "world_z_min": -79.25,
+      "world_z_max": -51.125
+    },
+    "highest_sample_human_cell_ambrose": {
+      "map_id": "AmbroseValley",
+      "actor_type": "human",
+      "cell_x": 11,
+      "cell_y": 27,
+      "movement_samples": 693,
+      "recorded_journeys": 96,
+      "matches": 95,
+      "map_actor_journeys": 554,
+      "world_x_min": -60.625,
+      "world_x_max": -32.5,
+      "world_z_min": -360.5,
+      "world_z_max": -332.375
+    }
+  },
+  "storm": {
+    "labels": 39,
+    "matches": 39,
+    "minimum_elapsed_seconds": 655,
+    "median_elapsed_seconds": 739,
+    "maximum_elapsed_seconds": 887,
+    "labels_at_or_after_12_minutes": 27
+  },
+  "loot_example": {
+    "match_id": "fbbc5d02-dd79-42fb-bba5-d768023891c8.nakama-0",
+    "rows": 7,
+    "actor_ids": [
+      "1429"
+    ],
+    "cluster_rows": 6,
+    "cluster_world_bounds": {
+      "x": [
+        -55,
+        -40
+      ],
+      "z": [
+        -360,
+        -350
+      ]
+    }
+  }
+}
