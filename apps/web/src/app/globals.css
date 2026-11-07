@@ -236,9 +236,24 @@ h1 { font-size: 27px; letter-spacing: -.8px; font-weight: 580; display: flex; al
 .map-view:fullscreen:has(.map-fullscreen-panel) .map-layer-note { left: auto; right: 18px; }
 .heatmap-legend { padding: 16px; border-top: 1px solid var(--line); }
 .heatmap-legend h2 { font-size: 12px; font-weight: 600; }
-.heatmap-legend ul { display: grid; gap: 10px; list-style: none; padding: 0; margin: 14px 0; }
-.heatmap-legend li { display: flex; align-items: center; gap: 9px; color: #b4c2aa; font-size: 11px; }
-.heatmap-legend li > i { width: 10px; height: 10px; border-radius: 2px; }
+.heatmap-colour-key { display: grid; gap: 10px; list-style: none; padding: 0; margin: 14px 0; }
+.heatmap-colour-key li { display: flex; align-items: center; gap: 9px; color: #b4c2aa; font-size: 11px; }
+.heatmap-colour-key li > i { width: 10px; height: 10px; border-radius: 2px; }
 .density-legend { height: 6px; border-radius: 3px; background: linear-gradient(to right, #e7ebe526, #e7ebe5); }
 .density-legend-labels { display: flex; justify-content: space-between; margin-top: 6px; color: #9eae93; font-size: 9px; }
 .heatmap-legend p { color: #94a28b; font-size: 10px; line-height: 1.6; margin-top: 10px; }
+
+/* The legend belongs to the map, outside the panning and zooming canvas. */
+.map-legend { position: absolute; top: 14px; left: 14px; z-index: 3; width: 208px; max-width: calc(100% - 90px); border: 1px solid #435239; border-radius: 6px; background: #171d17f5; box-shadow: 0 4px 16px #0004; }
+.map-legend summary { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 12px; cursor: pointer; list-style: none; font-size: 11px; color: #d4e6c4; }
+.map-legend summary::-webkit-details-marker { display: none; }
+.map-legend details:not([open]) summary > svg { transform: rotate(-90deg); }
+.map-legend-content { padding: 0 12px 12px; max-height: 220px; overflow-y: auto; overscroll-behavior: contain; }
+.map-legend-content .heatmap-colour-key { grid-template-columns: 1fr 1fr; gap: 8px 6px; margin: 4px 0 12px; }
+.map-legend-content .heatmap-colour-key li { font-size: 10px; }
+.map-legend-content p { margin-top: 10px; color: #94a28b; font-size: 9px; line-height: 1.5; }
+.map-legend-actors, .map-legend-events { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.map-legend-actors { padding: 3px 0 11px; border-bottom: 1px solid var(--line); }
+.map-legend-events { margin-top: 10px; }
+.map-legend-actors > span, .map-legend-events > span { display: flex; align-items: center; gap: 7px; color: #b4c2aa; font-size: 10px; }
+.map-legend-events svg { width: 17px; height: 17px; flex-shrink: 0; }

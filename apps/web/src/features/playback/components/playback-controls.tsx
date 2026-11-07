@@ -13,19 +13,24 @@ export function PlaybackControls({ frames, playback }: Props) {
   const { index, maximum, playing, speed, setSpeed, seek, toggle, restart } = playback;
   const current = frames[index]?.elapsedSeconds ?? 0;
   const last = frames[maximum]?.elapsedSeconds ?? 0;
+  const progress = maximum ? index / maximum * 100 : 0;
   const ticks = Array.from(new Set([0, Math.round(maximum / 4), Math.round(maximum / 2), Math.round(maximum * 3 / 4), maximum]));
 
   return <section className="playback-controls" aria-label="Playback controls">
     <div className="timeline-heading">
       <label htmlFor="playback-timeline">Recorded timestamps</label>
-      <span className="timeline-preview-badge">{frames.length ? `Step ${index + 1} of ${frames.length}` : "No recorded steps"}</span>
+      <span className="timeline-preview-badge">{frames.length ? `Event ${index + 1} of ${frames.length}` : "No recorded events"}</span>
     </div>
     <div className="timeline-track">
-      <input id="playback-timeline" className="playback-scrubber" type="range" min={0} max={maximum}
-        step={1} value={index} disabled={frames.length < 2}
-        aria-valuetext={`Recorded step ${index + 1}, ${formatElapsed(current)} from recording start`}
-        style={{ "--timeline-progress": `${maximum ? index / maximum * 100 : 0}%` } as React.CSSProperties}
-        onChange={(event) => seek(Number(event.target.value))} />
+      <div className="timeline-slider" style={{ "--timeline-progress": `${progress}%` } as React.CSSProperties}>
+        <output className="timeline-thumb-timestamp" htmlFor="playback-timeline" aria-hidden="true">
+          {frames.length ? formatElapsed(current) : "--:--"}
+        </output>
+        <input id="playback-timeline" className="playback-scrubber" type="range" min={0} max={maximum}
+          step={1} value={index} disabled={frames.length < 2}
+          aria-valuetext={frames.length ? `Recorded event ${index + 1}, ${formatElapsed(current)} from recording start` : "No recorded events"}
+          onChange={(event) => seek(Number(event.target.value))} />
+      </div>
       <div className="timeline-ticks" aria-hidden="true">
         {ticks.map((step) => <span key={step}>{formatElapsed(frames[step]?.elapsedSeconds ?? 0)}</span>)}
       </div>

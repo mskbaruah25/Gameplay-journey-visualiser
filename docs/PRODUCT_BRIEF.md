@@ -71,6 +71,21 @@ fullscreen container. Controls sit outside the draggable map canvas; entering or
 leaving fullscreen retains the selected layers and current playback state. These
 are requested UX additions; gameplay data and counting rules are unchanged.
 
+## Map legends and timeline labels, 7 November 2026
+
+The user requested an on-map legend in both Overview and Playback, also
+available in fullscreen. Overview explains the heatmap colours and relative
+density; Playback explains human/bot markers, solid/dashed trails, and the
+actual kill, death, loot, and storm symbols. Legends can collapse to reveal the
+map. Fullscreen Overview reuses its heatmap panel's legend.
+
+The scrubber handle now has a persistent elapsed `mm:ss` label that follows
+its position. The counter reads `Event x of y`, replacing `Step x of y`.
+This is a display label: one timeline event still groups all records at the
+same timestamp. Simultaneous events remain together, and raw event totals are
+unchanged. The user authorized a local commit and explicitly prohibited pushing
+this update to GitHub until requested.
+
 ## Required product capabilities
 
 | Assignment requirement | Expected user experience |

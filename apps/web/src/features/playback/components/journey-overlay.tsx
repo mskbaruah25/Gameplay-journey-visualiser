@@ -1,4 +1,5 @@
 import type { GameEvent, Participant, PlaybackFrame } from "@/lib/gameplay-types";
+import { EventSymbol } from "./event-symbol";
 
 interface Props {
   frames: PlaybackFrame[];
@@ -20,17 +21,7 @@ function trailPath(positions: GameEvent[]) {
 function EventMarker({ event }: { event: GameEvent }) {
   const location = `translate(${event.minimapX * 1000},${event.minimapY * 1000})`;
   const title = `${event.eventType}${event.repeatedCombat ? " · repeated combat record" : ""}`;
-  let marker;
-  if (event.eventType === "Loot") {
-    marker = <rect x={-6} y={-6} width={12} height={12} fill="#7dc8dd" stroke="#10160f" strokeWidth={2} />;
-  } else if (event.eventType === "KilledByStorm") {
-    marker = <path d="M0,-10 L9,7 L-9,7 Z" fill="#b8a1ed" stroke="#10160f" strokeWidth={2} />;
-  } else if (["Kill", "BotKill"].includes(event.eventType)) {
-    marker = <g stroke="#f2a56d" strokeWidth={3} fill="none"><circle r={8} /><path d="M-13,0 H13 M0,-13 V13" /></g>;
-  } else {
-    marker = <path d="M-8,-8 L8,8 M8,-8 L-8,8" stroke="#ff8993" strokeWidth={4} />;
-  }
-  return <g transform={location}><title>{title}</title>{marker}</g>;
+  return <g transform={location}><title>{title}</title><EventSymbol eventType={event.eventType} /></g>;
 }
 
 export function JourneyOverlay({ frames, index, participants, hidden }: Props) {

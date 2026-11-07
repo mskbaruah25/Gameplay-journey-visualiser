@@ -15,6 +15,8 @@ The ETL uses Spark for all Parquet reads and writes, including its test fixtures
 
 Use the map's fullscreen button for a larger view. Overview includes a collapsible heatmap panel with layer filters, opacity, reset, and a colour/density legend. Playback keeps the timestamp scrubber and transport controls at the bottom. Selections and playback state persist when fullscreen closes.
 
+Both views also include a collapsible on-map legend. The Playback scrubber shows elapsed time above its handle and labels its position as `Event x of y`; each timeline event groups all records at the same timestamp.
+
 Filters show only the supplied recordings for that selection. Counts describe retained event labels and position samples; they do not imply a complete lobby or verified killer/victim relationships.
 
 ## Start locally

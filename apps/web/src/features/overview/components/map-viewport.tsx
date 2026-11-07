@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, type PointerEvent, type ReactNode } from "react";
 import { Expand, Layers2, Minus, Play, Plus, RotateCcw } from "lucide-react";
 import type { HeatmapLayer, MapOption } from "../types";
+import { MapLegend } from "./map-legend";
 
 interface Props {
   map: MapOption;
@@ -94,6 +95,7 @@ export function MapViewport({ map, layers, mode = "overview", children, statusTe
         : <div className="map-layer-note"><Layers2 size={15} /><span>{layers.length ? `${layers.length} ${layers.length === 1 ? "layer" : "layers"} selected` : "Basemap only"}</span><i />{statusText ?? "No overlays selected"}</div>}
       {fullscreenError && <div className="map-notice" role="status">{fullscreenError}</div>}
     </div>
+    {(!fullscreen || mode === "playback") && <MapLegend mode={mode} layers={layers} />}
     {fullscreen && fullscreenPanel}
     {footer}
   </div>;
