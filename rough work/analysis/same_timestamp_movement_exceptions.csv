@@ -1,0 +1,3 @@
+match_id,map_id,event_timestamp,possible_killer_id,possible_killer_type,kill_event,possible_victim_id,possible_victim_type,death_event,killer_last_position_time,victim_last_position_time,killer_last_position_offset,victim_last_position_offset,killer_has_later_positions,victim_has_later_positions,movement_result
+413b9011-a43d-4957-a485-261668c9857b.nakama-0,Lockdown,1770706108,1418,bot,BotKill,77f3a15f-815a-47c0-9cf2-337e9c8946b1,human,BotKilled,1770706466,1770706109,358,1,True,True,both_have_later_positions
+fc797a67-e443-4f70-8813-5d2f30317e79.nakama-0,Lockdown,1770834920,1435,bot,BotKill,db454a35-d216-4379-b140-2931160c7d8a,human,BotKilled,1770835086,1770834925,166,5,True,True,both_have_later_positions

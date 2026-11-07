@@ -1,0 +1,15 @@
+{
+  "run_id": "c8fc8ab4-02d3-4370-8c08-87dac0df45c0",
+  "rule_version": "2026-11-06-v2",
+  "status": "succeeded",
+  "combat_counting": "retained_event_rows",
+  "started_at": "2026-11-06T07:22:33.133350+00:00",
+  "source_files": 1243,
+  "duplicate_files": 1,
+  "new_files": 0,
+  "affected_matches": [],
+  "processed_rows": 0,
+  "event_counts": {},
+  "source_rows": 89104,
+  "excluded_file_rows": 88
+}

@@ -1,0 +1,104 @@
+name: lila-journey
+
+x-etl: &etl
+  image: lila-etl:local
+  build:
+    context: .
+    dockerfile: services/etl/Dockerfile
+  environment: &etl-environment
+    # ETL needs a persistent session for its advisory lock. Use Neon's direct URL.
+    DATABASE_URL: ${DATABASE_URL_UNPOOLED:-${DATABASE_URL:-postgresql://lila:lila_local_only@postgres:5432/lila}}
+    S3_ENDPOINT: ${S3_ENDPOINT:-minio:9000}
+    S3_ACCESS_KEY: ${S3_ACCESS_KEY:-${MINIO_ROOT_USER:-lila_local}}
+    S3_SECRET_KEY: ${S3_SECRET_KEY:-${MINIO_ROOT_PASSWORD:-lila_storage_local_only}}
+    S3_SECURE: ${S3_SECURE:-false}
+    S3_BUCKET: ${S3_BUCKET:-lila-gameplay}
+    DATASET_YEAR: ${DATASET_YEAR:-2026}
+    SPARK_MASTER: local[2]
+    SPARK_DRIVER_MEMORY: ${SPARK_DRIVER_MEMORY:-512m}
+
+services:
+  # This profile is a local substitute. Set DATABASE_URL to Neon and omit it remotely.
+  postgres:
+    profiles: [local]
+    image: postgres:17.6-bookworm
+    environment:
+      POSTGRES_USER: lila
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-lila_local_only}
+      POSTGRES_DB: lila
+    ports:
+      - "127.0.0.1:${POSTGRES_PORT:-55432}:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: [CMD-SHELL, "pg_isready -U lila -d lila"]
+      interval: 3s
+      timeout: 3s
+      retries: 30
+
+  minio:
+    # Source-built, pinned Community release for local development.
+    image: lila-minio:local
+    build:
+      context: .
+      dockerfile: infrastructure/minio/Dockerfile
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-lila_local}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-lila_storage_local_only}
+    ports:
+      - "127.0.0.1:${MINIO_API_PORT:-9000}:9000"
+      - "127.0.0.1:${MINIO_CONSOLE_PORT:-9001}:9001"
+    volumes:
+      - minio-data:/data
+
+  minio-init:
+    <<: *etl
+    command: init-storage
+    depends_on:
+      minio:
+        condition: service_started
+
+  migrate:
+    <<: *etl
+    command: migrate
+    depends_on:
+      postgres:
+        condition: service_healthy
+        required: false
+
+  seed:
+    <<: *etl
+    # Optional demo loader. Cloud ingestion starts with objects already in Landing.
+    profiles: [demo]
+    command: [upload, /input]
+    volumes:
+      - ./player_data:/input:ro
+    depends_on:
+      minio-init:
+        condition: service_completed_successfully
+
+  etl:
+    <<: *etl
+    command: run
+    depends_on:
+      minio-init:
+        condition: service_completed_successfully
+      migrate:
+        condition: service_completed_successfully
+
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+    environment:
+      DATABASE_URL: ${DATABASE_URL:-postgresql://lila:lila_local_only@postgres:5432/lila}
+    ports:
+      - "127.0.0.1:${WEB_PORT:-3000}:3000"
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+
+volumes:
+  postgres-data:
+  minio-data:

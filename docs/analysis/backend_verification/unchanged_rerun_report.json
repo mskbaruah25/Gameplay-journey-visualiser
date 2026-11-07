@@ -1,0 +1,15 @@
+{
+  "run_id": "edad805e-bfc8-4214-8fd1-5c5bb18a91fb",
+  "rule_version": "2026-11-05-v1",
+  "status": "succeeded",
+  "combat_counting": "retained_event_rows",
+  "started_at": "2026-11-05T14:59:53.504342+00:00",
+  "source_files": 1243,
+  "source_rows": 89104,
+  "duplicate_files": 1,
+  "excluded_file_rows": 88,
+  "new_files": 0,
+  "affected_matches": [],
+  "processed_rows": 0,
+  "event_counts": {}
+}

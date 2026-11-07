@@ -1,0 +1,5 @@
+# Local ETL development and tests. The container uses the ETL file directly.
+-r services/etl/requirements.txt
+
+# Optional regeneration of the browser minimaps.
+pillow==13.0.0

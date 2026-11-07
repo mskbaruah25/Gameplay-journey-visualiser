@@ -1,0 +1,14 @@
+.git
+.venv
+node_modules
+**/node_modules
+**/.next
+**/__pycache__
+**/*.tsbuildinfo
+.env*
+**/.env*
+player_data
+docs
+*.ipynb
+rough work/
+artifacts

@@ -1,0 +1,23 @@
+.venv/
+__pycache__/
+*.py[cod]
+.DS_Store
+.sparkStaging/
+spark-warehouse/
+artifacts/
+node_modules/
+.next/
+*.tsbuildinfo
+.env*
+!.env.example
+*.license
+
+# Keep the curated investigation, but leave backups and verbose output local.
+/rough work/notebooks/exp.before_rebuild.ipynb
+/rough work/scripts/exp.py
+/rough work/notes/
+/rough work/verification/
+.ipynb_checkpoints/
+
+# Keep the deployment operations guide local only.
+/docs/DEPLOYMENT.md

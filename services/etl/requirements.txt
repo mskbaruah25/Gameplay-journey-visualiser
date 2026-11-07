@@ -1,0 +1,4 @@
+# Runtime dependencies only; notebook dependencies remain at the project root.
+pyspark==4.3.0
+psycopg[binary]==3.3.8
+minio==7.2.20

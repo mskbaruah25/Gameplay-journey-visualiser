@@ -1,0 +1,5 @@
+[
+  {"id":"AmbroseValley","name":"Ambrose Valley","image_path":"/maps/AmbroseValley.webp","image_width":4320,"image_height":4320,"origin_x":-370,"origin_z":-473,"world_scale":900},
+  {"id":"GrandRift","name":"Grand Rift","image_path":"/maps/GrandRift.webp","image_width":2160,"image_height":2158,"origin_x":-290,"origin_z":-290,"world_scale":581},
+  {"id":"Lockdown","name":"Lockdown","image_path":"/maps/Lockdown.webp","image_width":9000,"image_height":9000,"origin_x":-500,"origin_z":-500,"world_scale":1000}
+]

@@ -1,0 +1,4 @@
+selection_reason,match_id,recorded_ids,all_source_rows,one_copy_per_file_rows,raw_kill_label_rows,raw_loot_rows,independent_count_agrees
+One recorded ID with many kill labels,b3550292-8f80-493a-a422-95c4e70f0a5e.nakama-0,1,217,217,38,43,True
+Most recorded IDs,fbbc5d02-dd79-42fb-bba5-d768023891c8.nakama-0,16,1015,1015,5,7,True
+Byte-identical file appears in two folders,ac049b28-8116-4ff1-9e60-4be0537b8cc9.nakama-0,7,359,271,11,38,True

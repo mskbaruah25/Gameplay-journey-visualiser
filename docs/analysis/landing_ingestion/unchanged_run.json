@@ -1,0 +1,80 @@
+{
+  "run_id": "7a49fc25-886b-4c94-9da5-ccde34a58591",
+  "rule_version": "2026-11-06-v2",
+  "status": "succeeded",
+  "combat_counting": "retained_event_rows",
+  "started_at": "2026-11-06T13:16:24.936988+00:00",
+  "landing": {
+    "rule_version": "2026-11-06-v1",
+    "date_check": "first_valid_timestamp_only",
+    "discovered_files": 1243,
+    "checked_files": 0,
+    "archived_files": 0,
+    "unchanged_files": 1243,
+    "date_mismatches": [
+      {
+        "object_key": "landing/February_10/2c551757-8e8e-4278-b979-d90f4b995285_e325a53a-2e3c-46ba-9288-777fe508e8b7.nakama-0",
+        "folder_date": "2026-02-10",
+        "sampled_event_date": "2026-02-09"
+      },
+      {
+        "object_key": "landing/February_11/1436_ac049b28-8116-4ff1-9e60-4be0537b8cc9.nakama-0",
+        "folder_date": "2026-02-11",
+        "sampled_event_date": "2026-02-10"
+      },
+      {
+        "object_key": "landing/February_11/1440_ac049b28-8116-4ff1-9e60-4be0537b8cc9.nakama-0",
+        "folder_date": "2026-02-11",
+        "sampled_event_date": "2026-02-10"
+      },
+      {
+        "object_key": "landing/February_11/1444_ac049b28-8116-4ff1-9e60-4be0537b8cc9.nakama-0",
+        "folder_date": "2026-02-11",
+        "sampled_event_date": "2026-02-10"
+      },
+      {
+        "object_key": "landing/February_11/1448_ac049b28-8116-4ff1-9e60-4be0537b8cc9.nakama-0",
+        "folder_date": "2026-02-11",
+        "sampled_event_date": "2026-02-10"
+      },
+      {
+        "object_key": "landing/February_11/1452_ac049b28-8116-4ff1-9e60-4be0537b8cc9.nakama-0",
+        "folder_date": "2026-02-11",
+        "sampled_event_date": "2026-02-10"
+      },
+      {
+        "object_key": "landing/February_11/1456_ac049b28-8116-4ff1-9e60-4be0537b8cc9.nakama-0",
+        "folder_date": "2026-02-11",
+        "sampled_event_date": "2026-02-10"
+      },
+      {
+        "object_key": "landing/February_11/92aa669f-1e40-43df-adbf-29462decf2d8_7971ea81-1fb9-4fe1-a1af-cc9adf03c0ce.nakama-0",
+        "folder_date": "2026-02-11",
+        "sampled_event_date": "2026-02-10"
+      },
+      {
+        "object_key": "landing/February_11/a0738c7c-612e-45c9-b24d-057115642057_de642f4b-d0ce-4b0b-8a72-aafcfa850466.nakama-0",
+        "folder_date": "2026-02-11",
+        "sampled_event_date": "2026-02-10"
+      },
+      {
+        "object_key": "landing/February_11/cfa03e9f-81f6-41ef-a0fa-30c7e830f4ed_ac049b28-8116-4ff1-9e60-4be0537b8cc9.nakama-0",
+        "folder_date": "2026-02-11",
+        "sampled_event_date": "2026-02-10"
+      },
+      {
+        "object_key": "landing/February_11/e7ac0138-4d80-4400-9141-461daa6be8ae_7364fb6c-aba4-4641-a481-16eb29b1807f.nakama-0",
+        "folder_date": "2026-02-11",
+        "sampled_event_date": "2026-02-10"
+      }
+    ]
+  },
+  "source_files": 1243,
+  "duplicate_files": 1,
+  "new_files": 0,
+  "affected_matches": [],
+  "processed_rows": 0,
+  "event_counts": {},
+  "source_rows": 89104,
+  "excluded_file_rows": 88
+}

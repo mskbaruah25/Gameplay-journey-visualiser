@@ -1,0 +1,12 @@
+{
+  "events": 89016,
+  "matches": 796,
+  "participants": 1242,
+  "event_id_hash": "86708a40de5fcffc97abd976522bd31f",
+  "same_event_ids_as_native_import": true,
+  "recorded_spans_seconds": {
+    "minimum": 13.0,
+    "median": 382.0,
+    "maximum": 890.0
+  }
+}
