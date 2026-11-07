@@ -24,6 +24,18 @@ branch-specific and local-only feature qualifiers from the submission README.
 This is the intended release documentation state, not evidence that the merge
 or deployment has occurred, and does not authorize performing those actions.
 
+## Guided README walkthrough, 8 November 2026
+
+The user requested a basic menu/panel/button usage guide, an eventful match
+analysis, specific feature checks, and a commit/push to GitHub. Keep the README
+concise and describe verified recordings rather than illustrative findings.
+The primary example is Ambrose Valley on 12 February 2026, match `fbbc5d02…`
+(currently Match 114): 1 human, 15 bots, 1,015 events, five kill labels, eight
+death labels, and seven Loot rows across 120 timestamp groups spanning 8:43.
+Use `5a081fe4…` on 10 February for the separate 14:38 storm-death check.
+These examples were checked against the public API; recorded labels do not
+establish unique incidents, opponent identities, or a complete lobby.
+
 ## Production release branch, 8 November 2026
 
 The user requested restoring and committing the stashed README on
