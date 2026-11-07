@@ -32,8 +32,11 @@ export async function listMatches(mapId: string | null, date: string | null, lim
     `, filters);
     const rows = await client.query<MatchOption>(`
       SELECT m.id, m.map_id AS "mapId", m.first_recorded_at AS "firstRecordedAt",
-        m.last_recorded_at AS "lastRecordedAt", count(*)::integer AS "eventCount"
+        m.last_recorded_at AS "lastRecordedAt", count(*)::integer AS "eventCount",
+        count(DISTINCT p.id) FILTER (WHERE p.actor_type='human')::integer AS humans,
+        count(DISTINCT p.id) FILTER (WHERE p.actor_type='bot')::integer AS bots
       FROM matches m JOIN events e ON e.match_id=m.id
+        JOIN match_participants p ON p.id=e.participant_id
       WHERE ($1::text IS NULL OR m.map_id=$1) AND ($2::date IS NULL OR e.event_date=$2)
       GROUP BY m.id ORDER BY m.first_recorded_at, m.id LIMIT $3 OFFSET $4
     `, [...filters, limit, offset]);
@@ -43,7 +46,7 @@ export async function listMatches(mapId: string | null, date: string | null, lim
 }
 
 async function readOverview(client: PoolClient, matchId: string, date: string | null): Promise<MatchOverview> {
-  const match = await client.query<MatchOption & { revision: string }>(`
+  const match = await client.query<Omit<MatchOption, "eventCount" | "humans" | "bots"> & { revision: string }>(`
     SELECT id, map_id AS "mapId", first_recorded_at AS "firstRecordedAt",
       last_recorded_at AS "lastRecordedAt", updated_run_id::text AS revision
     FROM matches WHERE id=$1
@@ -74,7 +77,7 @@ async function readOverview(client: PoolClient, matchId: string, date: string | 
   `, [matchId, date]);
   const { revision, ...recording } = match.rows[0];
   return {
-    match: { ...recording, eventCount: totals.rows[0].eventCount },
+    match: { ...recording, eventCount: totals.rows[0].eventCount, humans: totals.rows[0].humans, bots: totals.rows[0].bots },
     date,
     stats: totals.rows[0],
     participants: participants.rows,

@@ -16,6 +16,8 @@ export interface MatchOption {
   firstRecordedAt: string;
   lastRecordedAt: string;
   eventCount: number;
+  humans: number;
+  bots: number;
 }
 
 export interface Participant {

@@ -38,7 +38,8 @@ export function useMatchPlayback(frames: PlaybackFrame[]) {
     setPlaying((current) => !current);
   }
 
-  return { index: Math.min(index, maximum), maximum, playing, speed, setSpeed, seek, toggle, restart: () => seek(0) };
+  return { index: Math.min(index, maximum), maximum, playing, speed, setSpeed, seek, toggle,
+    pause: () => setPlaying(false), restart: () => seek(0) };
 }
 
 export function formatElapsed(seconds: number) {

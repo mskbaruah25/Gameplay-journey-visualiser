@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import "@/features/playback/styles/playback.css";
+import "@/features/overview/styles/workspace.css";
+import "@/features/playback/styles/combat-timeline.css";
+import "@/features/playback/styles/marker-inspector.css";
 
 export const metadata: Metadata = {
   title: "Gameplay Journey Visualizer",

@@ -13,9 +13,10 @@ interface Props {
   statusText?: string;
   fullscreenPanel?: ReactNode;
   footer?: ReactNode;
+  inspector?: ReactNode;
 }
 
-export function MapViewport({ map, layers, mode = "overview", children, statusText, fullscreenPanel, footer }: Props) {
+export function MapViewport({ map, layers, mode = "overview", children, statusText, fullscreenPanel, footer, inspector }: Props) {
   const viewport = useRef<HTMLDivElement>(null);
   const canvas = useRef<HTMLDivElement>(null);
   const drag = useRef<{ x: number; y: number; left: number; top: number } | null>(null);
@@ -59,6 +60,7 @@ export function MapViewport({ map, layers, mode = "overview", children, statusTe
   }
 
   return <div className="map-view" ref={viewport}>
+    <div className="map-stage">
     {/* Keep controls inside the fullscreen element, outside the draggable canvas. */}
     <div className={`map-viewport ${dragging ? "dragging" : ""} ${zoom > 1 ? "is-zoomed" : ""}`} ref={canvas}
       onPointerDown={(event) => {
@@ -97,6 +99,8 @@ export function MapViewport({ map, layers, mode = "overview", children, statusTe
     </div>
     {(!fullscreen || mode === "playback") && <MapLegend mode={mode} layers={layers} />}
     {fullscreen && fullscreenPanel}
+    {inspector}
+    </div>
     {footer}
   </div>;
 }
