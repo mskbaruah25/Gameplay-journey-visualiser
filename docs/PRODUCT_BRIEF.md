@@ -24,6 +24,18 @@ branch-specific and local-only feature qualifiers from the submission README.
 This is the intended release documentation state, not evidence that the merge
 or deployment has occurred, and does not authorize performing those actions.
 
+## Production release branch, 8 November 2026
+
+The user requested restoring and committing the stashed README on
+`extra-features`, then merging all feature and UI work into `production`,
+created from `main`. This supersedes the earlier no-push limits for these
+changes and authorizes publishing the merged production release. `UI-1` was
+already an ancestor of `extra-features`, so its theme and wordmark are included.
+The README and remaining feature work were committed separately, merged without
+conflicts, and pushed to `origin/production`. Vercel's Production environment
+was changed from tracking `main` to tracking `production`. Keep this branch as
+the release source; the database and ingestion rules are unchanged.
+
 ## Current implementation status on 5 November 2026
 
 The user has explicitly authorized starting backend, database, ETL, and container development, with clean, structured, human-readable code and comments. This supersedes the earlier UI-only implementation limit for the newly authorized work. The original source files, notebooks, assignment, and rough Word notes remain retained.
