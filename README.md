@@ -1,4 +1,4 @@
-# LILA BLACK Player Journey Tool
+# Gameplay Journey Visualizer
 
 A Next.js and PostgreSQL application for exploring the supplied gameplay recordings. The backend and ETL implementation is now present: six application tables, MinIO storage, Python/Spark ingestion, read-only APIs, UTC date filtering, participant journeys, timestamp-step playback, event markers, metrics, and heatmap grids.
 

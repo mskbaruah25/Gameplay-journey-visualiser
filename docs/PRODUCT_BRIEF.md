@@ -111,6 +111,18 @@ marker shapes, supplied map images, coordinate mapping, and counting semantics
 remain independent of interface colours. This is a local visual trial; it does
 not authorize pushing or deploying the theme to the hosted app.
 
+## Independent product identity
+
+The user requested removing the LILA logo and replacing it with a creative
+"Gameplay Journey Visualizer" wordmark. The header uses small, spaced
+"Gameplay" text above "Journey Visualizer", with white and blue typography
+matching the Graphite theme. Remove the old three-bar symbol and company
+wordmark. Browser titles and the favicon identify the independent tool; the
+game name remains only as dataset context, labelled "LILA BLACK DATA".
+The metadata description identifies the project as an independent assessment.
+This decision changes presentation, not the supplied reference materials,
+map assets, or telemetry. Work remains local to `UI-1` unless a push is requested.
+
 ## Required product capabilities
 
 | Assignment requirement | Expected user experience |

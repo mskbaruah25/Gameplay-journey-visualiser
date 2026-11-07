@@ -40,7 +40,7 @@ export function OverviewPage() {
   const viewName = isPlayback ? "Playback" : "Overview";
   const ViewIcon = isPlayback ? Play : Grid2X2;
 
-  useEffect(() => { document.title = `${viewName} · LILA BLACK`; }, [viewName]);
+  useEffect(() => { document.title = `${viewName} · Gameplay Journey Visualizer`; }, [viewName]);
   useEffect(() => { setHidden([]); }, [data.matchId, data.date]);
 
   function changeMode(next: "overview" | "playback") {
@@ -52,9 +52,11 @@ export function OverviewPage() {
 
   return <div className="app-shell">
     <header className="app-header">
-      <a href="/" className="brand" aria-label="LILA BLACK overview">
-        <span className="brand-symbol" aria-hidden="true"><i /><i /><i /></span>
-        <span className="brand-name">LILA<span>BLACK</span></span>
+      <a href="/" className="brand" aria-label="Gameplay Journey Visualizer overview">
+        <span className="brand-name">
+          <span className="brand-kicker">Gameplay</span>
+          <span className="brand-title">Journey <span>Visualizer</span></span>
+        </span>
       </a>
       <div className="header-divider" /><span className="workspace-name">Level design workspace</span>
       <div className="header-right"><span className="dataset-badge"><span />Recorded gameplay</span><div className="avatar">LD</div></div>
@@ -85,7 +87,7 @@ export function OverviewPage() {
     <main className={`main-content ${isPlayback ? "is-playback" : ""}`} id="main-content">
       <div className="page-heading">
         <div><div className="breadcrumb">Workspace<ChevronRight size={12} /><span>{viewName}</span></div>
-          <h1>{isPlayback ? "Match playback" : "Overview"}<span className="small-badge">LILA BLACK</span></h1>
+          <h1>{isPlayback ? "Match playback" : "Overview"}<span className="small-badge">LILA BLACK DATA</span></h1>
           <p>{isPlayback ? "Follow a match, one recorded moment at a time." : "A closer look at where the action happens."}</p></div>
         <div className="page-status"><span className="status-dot" />{formatDate(data.date)}</div>
       </div>

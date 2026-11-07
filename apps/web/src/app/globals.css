@@ -47,14 +47,11 @@ h1, h2, p { margin: 0; }
 ::selection { background: var(--selection); }
 .app-shell { display: grid; grid-template-columns: 272px minmax(0, 1fr); grid-template-rows: 68px 1fr; min-height: 100dvh; }
 .app-header { grid-column: 1 / -1; display: flex; align-items: center; padding: 0 26px; border-bottom: 1px solid var(--line); background: var(--shell); gap: 26px; }
-.brand { display: flex; align-items: center; gap: 11px; width: 219px; flex-shrink: 0; }
-.brand-symbol { width: 29px; height: 29px; position: relative; display: block; transform: skewY(-12deg); }
-.brand-symbol i { position: absolute; background: var(--accent); width: 7px; }
-.brand-symbol i:nth-child(1) { left: 0; top: 0; height: 29px; }
-.brand-symbol i:nth-child(2) { left: 11px; top: 9px; height: 20px; }
-.brand-symbol i:nth-child(3) { left: 22px; top: 0; height: 29px; }
-.brand-name { font-size: 22px; font-weight: 850; letter-spacing: -1px; display: flex; gap: 8px; align-items: center; }
-.brand-name > span { font-size: 10px; letter-spacing: 2.2px; font-weight: 600; color: var(--muted); border-left: 1px solid var(--line); padding: 5px 0 5px 10px; margin-left: 2px; }
+.brand { display: flex; align-items: center; width: 219px; flex-shrink: 0; }
+.brand-name { display: flex; flex-direction: column; gap: 3px; }
+.brand-kicker { color: var(--muted); font-size: 9px; font-weight: 600; letter-spacing: 2.6px; line-height: 1; text-transform: uppercase; }
+.brand-title { color: var(--text); font-size: 19px; font-weight: 650; letter-spacing: -.6px; line-height: 1.2; white-space: nowrap; }
+.brand-title > span { color: var(--accent-text); font-weight: 450; }
 .header-divider { width: 1px; height: 22px; background: var(--line); }
 .workspace-name { color: var(--muted); font-size: 12px; letter-spacing: .15px; }
 .header-right { display: flex; align-items: center; gap: 25px; margin-left: auto; }
