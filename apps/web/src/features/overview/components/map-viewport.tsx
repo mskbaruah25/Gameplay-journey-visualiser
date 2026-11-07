@@ -13,9 +13,10 @@ interface Props {
   statusText?: string;
   fullscreenPanel?: ReactNode;
   footer?: ReactNode;
+  inspector?: ReactNode;
 }
 
-export function MapViewport({ map, layers, mode = "overview", children, statusText, fullscreenPanel, footer }: Props) {
+export function MapViewport({ map, layers, mode = "overview", children, statusText, fullscreenPanel, footer, inspector }: Props) {
   const viewport = useRef<HTMLDivElement>(null);
   const canvas = useRef<HTMLDivElement>(null);
   const drag = useRef<{ x: number; y: number; left: number; top: number } | null>(null);
@@ -59,6 +60,7 @@ export function MapViewport({ map, layers, mode = "overview", children, statusTe
   }
 
   return <div className="map-view" ref={viewport}>
+    <div className="map-stage">
     {/* Keep controls inside the fullscreen element, outside the draggable canvas. */}
     <div className={`map-viewport ${dragging ? "dragging" : ""} ${zoom > 1 ? "is-zoomed" : ""}`} ref={canvas}
       onPointerDown={(event) => {
@@ -81,7 +83,7 @@ export function MapViewport({ map, layers, mode = "overview", children, statusTe
           {children}
         </div>
       </div>
-      <div className="compass" aria-label="Map top"><span>N</span><svg viewBox="0 0 24 30" aria-hidden="true"><path d="M12 1 21 27 12 21 3 27Z" fill="currentColor"/><path d="M12 1v20l9 6Z" fill="#5c665b"/></svg></div>
+      <div className="compass" aria-label="Map top"><span>N</span><svg viewBox="0 0 24 30" aria-hidden="true"><path d="M12 1 21 27 12 21 3 27Z" fill="currentColor"/><path d="M12 1v20l9 6Z" fill="var(--subtle)"/></svg></div>
       <div className="map-tools" aria-label="Map controls">
         <button aria-label="Zoom in" title="Zoom in" onClick={() => changeZoom(0.25)} disabled={zoom === 3}><Plus size={17} /></button>
         <span className="zoom-value">{Math.round(zoom * 100)}%</span>
@@ -97,6 +99,8 @@ export function MapViewport({ map, layers, mode = "overview", children, statusTe
     </div>
     {(!fullscreen || mode === "playback") && <MapLegend mode={mode} layers={layers} />}
     {fullscreen && fullscreenPanel}
+    {inspector}
+    </div>
     {footer}
   </div>;
 }

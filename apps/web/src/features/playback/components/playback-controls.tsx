@@ -3,6 +3,7 @@
 import { Pause, Play, RotateCcw } from "lucide-react";
 import type { PlaybackFrame } from "@/lib/gameplay-types";
 import { PLAYBACK_SPEEDS, formatElapsed, useMatchPlayback } from "../hooks/use-match-playback";
+import { CombatTimeline } from "./combat-timeline";
 
 interface Props {
   frames: PlaybackFrame[];
@@ -22,18 +23,22 @@ export function PlaybackControls({ frames, playback }: Props) {
       <span className="timeline-preview-badge">{frames.length ? `Event ${index + 1} of ${frames.length}` : "No recorded events"}</span>
     </div>
     <div className="timeline-track">
-      <div className="timeline-slider" style={{ "--timeline-progress": `${progress}%` } as React.CSSProperties}>
-        <output className="timeline-thumb-timestamp" htmlFor="playback-timeline" aria-hidden="true">
-          {frames.length ? formatElapsed(current) : "--:--"}
-        </output>
-        <input id="playback-timeline" className="playback-scrubber" type="range" min={0} max={maximum}
-          step={1} value={index} disabled={frames.length < 2}
-          aria-valuetext={frames.length ? `Recorded event ${index + 1}, ${formatElapsed(current)} from recording start` : "No recorded events"}
-          onChange={(event) => seek(Number(event.target.value))} />
+      <div className="timeline-axis">
+        <span className="timeline-axis-label" aria-hidden="true">Time</span>
+        <div className="timeline-slider" style={{ "--timeline-progress": `${progress}%` } as React.CSSProperties}>
+          <output className="timeline-thumb-timestamp" htmlFor="playback-timeline" aria-hidden="true">
+            {frames.length ? formatElapsed(current) : "--:--"}
+          </output>
+          <input id="playback-timeline" className="playback-scrubber" type="range" min={0} max={maximum}
+            step={1} value={index} disabled={frames.length < 2}
+            aria-valuetext={frames.length ? `Recorded event ${index + 1}, ${formatElapsed(current)} from recording start` : "No recorded events"}
+            onChange={(event) => seek(Number(event.target.value))} />
+        </div>
       </div>
       <div className="timeline-ticks" aria-hidden="true">
         {ticks.map((step) => <span key={step}>{formatElapsed(frames[step]?.elapsedSeconds ?? 0)}</span>)}
       </div>
+      <CombatTimeline frames={frames} index={index} onSeek={seek} />
     </div>
     <div className="transport-row">
       <div className="transport-actions">

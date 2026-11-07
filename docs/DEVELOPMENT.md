@@ -179,6 +179,20 @@ The local driver heap defaults to `SPARK_DRIVER_MEMORY=512m`. Increase it for la
 
 Dates are optional on the match-specific routes. Event/match listings accept `limit` and `offset`. Heatmap options include `gridSize` between 8 and 128 and optional `actorType=human` or `actorType=bot`. Layers are `traffic`, `kills`, `deaths`, `storm`, and `loot`. Invalid dates/options return 400, unknown matches return 404, and unavailable database data returns 503. Playback refuses responses above 100,000 events rather than silently truncating them; the paginated event endpoint remains available.
 
+Match choices include `humans` and `bots`: distinct recorded participant counts
+within the requested UTC date, or the full recording when date is omitted. The
+web app applies search and the multiple-participant filter to its complete
+paginated match list, keeping original match numbers and the active selection.
+No additional table or migration is required.
+
+Playback combat indicators use the same frame indexes as the scrubber. Kill
+labels, combat-death labels, and storm deaths occupy separate lanes; the exact
+timestamp menu keeps densely packed moments reachable. Marker inspection uses
+the already loaded events and participant metadata, without an extra database
+query. It pauses playback and shows recorded actor/time/coordinates, including
+simultaneous records, without inferring an opponent. Both features are inside
+the fullscreen container. See [the usability verification](analysis/extra_features/README.md).
+
 ## Verification
 
 ```sh

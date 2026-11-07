@@ -29,6 +29,34 @@ test("match pagination includes all 796 supplied match IDs", async () => {
   assert.notEqual(first.matches[0].id, second.matches[0].id);
 });
 
+test("match choices include distinct recorded participant counts with the same UTC scope as the overview", async () => {
+  const first = await get("/api/matches?limit=500");
+  const second = await get("/api/matches?limit=500&offset=500");
+  const matches = [...first.matches, ...second.matches];
+  assert.equal(matches.length, 796);
+  assert.equal(matches.reduce((total, match) => total + match.eventCount, 0), 89016);
+  assert.equal(matches.filter((match) => match.humans + match.bots > 1).length, 53);
+  assert.ok(matches.every((match) => Number.isInteger(match.humans) && Number.isInteger(match.bots)
+    && match.humans >= 0 && match.bots >= 0 && match.humans + match.bots >= 1));
+
+  const listing = await get("/api/matches?mapId=AmbroseValley&date=2026-02-12&limit=500");
+  const example = listing.matches.find((match) => match.id === "fbbc5d02-dd79-42fb-bba5-d768023891c8.nakama-0");
+  assert.equal(example.humans, 1);
+  assert.equal(example.bots, 15);
+
+  // The cross-midnight recording is listed separately for each event date.
+  const crossingId = "e325a53a-2e3c-46ba-9288-777fe508e8b7.nakama-0";
+  for (const date of ["2026-02-09", "2026-02-10"]) {
+    const page = await get(`/api/matches?date=${date}&limit=500`);
+    const crossing = page.matches.find((match) => match.id === crossingId);
+    assert.ok(crossing);
+    const overview = await get(`/api/matches/${crossing.id}?date=${date}`);
+    assert.equal(crossing.humans, overview.stats.humans);
+    assert.equal(crossing.bots, overview.stats.bots);
+    assert.equal(crossing.eventCount, overview.stats.eventCount);
+  }
+});
+
 test("representative recordings preserve events and exclude the copied file", async () => {
   for (const [id, rows, humans, bots] of [
     [matchId, 217, 1, 0],
