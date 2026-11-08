@@ -21,8 +21,7 @@
 .loot-marker { color: #7dc8dd; }
 .storm-marker { color: #b8a1ed; }
 .playback-controls { padding: 18px 22px 19px; background: var(--panel); border-top: 1px solid var(--line); flex-shrink: 0; }
-.timeline-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-.timeline-heading label { font-size: 12px; color: var(--text-soft); font-weight: 500; }
+.timeline-summary { display: flex; justify-content: flex-end; }
 .timeline-preview-badge { font-size: 12px; letter-spacing: .2px; color: var(--muted); background: var(--accent-soft); border: 1px solid var(--line); border-radius: 3px; padding: 4px 6px; }
 .timeline-track { padding-top: 15px; }
 .timeline-slider { position: relative; padding-top: 27px; }

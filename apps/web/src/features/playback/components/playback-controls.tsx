@@ -18,8 +18,7 @@ export function PlaybackControls({ frames, playback }: Props) {
   const ticks = Array.from(new Set([0, Math.round(maximum / 4), Math.round(maximum / 2), Math.round(maximum * 3 / 4), maximum]));
 
   return <section className="playback-controls" aria-label="Playback controls">
-    <div className="timeline-heading">
-      <label htmlFor="playback-timeline">Recorded timestamps</label>
+    <div className="timeline-summary">
       <span className="timeline-preview-badge">{frames.length ? `Event ${index + 1} of ${frames.length}` : "No recorded events"}</span>
     </div>
     <div className="timeline-track">
@@ -31,6 +30,7 @@ export function PlaybackControls({ frames, playback }: Props) {
           </output>
           <input id="playback-timeline" className="playback-scrubber" type="range" min={0} max={maximum}
             step={1} value={index} disabled={frames.length < 2}
+            aria-label="Playback timeline"
             aria-valuetext={frames.length ? `Recorded event ${index + 1}, ${formatElapsed(current)} from recording start` : "No recorded events"}
             onChange={(event) => seek(Number(event.target.value))} />
         </div>

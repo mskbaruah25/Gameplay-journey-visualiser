@@ -10,6 +10,10 @@ The assignment describes the product and submission expectations. Its instructio
 
 ## Catalogue and playback performance, 8 November 2026
 
+The user requested removing the visible "Recorded timestamps" heading above the
+scrubber. Keep the map legend, event counter, and playback controls; the scrubber
+retains the accessible name "Playback timeline".
+
 The user authorized implementing the two localized scaling improvements discussed:
 server-side match discovery and optimized single-match playback. Match choices
 now use atomically published full-match/UTC-date summaries, server-side search

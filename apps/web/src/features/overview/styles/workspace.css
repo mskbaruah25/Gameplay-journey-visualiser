@@ -19,7 +19,7 @@
 .map-legend { width: 248px; }
 .map-legend-content { max-height: 260px; }
 .map-panel-footer { padding-top: 9px; padding-bottom: 9px; }
-.section-heading h2, .timeline-heading label { font-size: 14px; }
+.section-heading h2 { font-size: 14px; }
 .layer-button, .view-tab { font-size: 13px; }
 .select-field label { line-height: 1.4; }
 .match-selector .match-participant-filter { display: flex; align-items: flex-start; gap: 8px; margin: 12px 0; cursor: pointer; color: var(--text-soft); font-size: 12px; }
