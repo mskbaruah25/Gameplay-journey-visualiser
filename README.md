@@ -105,6 +105,7 @@ Adjust the URL if `WEB_PORT` changes. ETL test commands and recorded verificatio
 - `config/maps.json` — coordinate transforms and map dimensions.
 - `player_data/` — unchanged source data and minimaps.
 - [ARCHITECTURE.md](ARCHITECTURE.md) — data flow, mapping, assumptions, and tradeoffs.
+- [INSIGHTS.md](INSIGHTS.md) — data analysis and three gameplay insights with supporting evidence.
 - [Data nuances](docs/DATA_NUANCES.md) — observed issues and handling decisions.
 - [Exploration](rough%20work/README.md) — notebooks, experimental SQL, and supporting evidence.
 
@@ -114,7 +115,7 @@ Adjust the URL if `WEB_PORT` changes. ETL test commands and recorded verificatio
 2. **Choose the example:** enter `fbbc5d02` in **Search matches**, then open **Match** and select **Match 114 · 1 human · 15 bots**. Searching only filters the list; select the result to open it.
 3. **Read Overview:** the centre panel shows the minimap; summary cards sit below it. This example has **1,015 events**, **995 position samples**, **5 kill labels**, **8 death labels**, and **7 loot items**. Click left-panel **Heatmap layers** to toggle overlays.
 4. **Watch journeys:** click **Playback** above the map. The left panel becomes **Recorded participants**; playback controls appear below the map. Uncheck/recheck a participant to hide/restore its journey and markers.
-5. **Inspect events:** use **Jump to combat** below the slider, then click a map marker. Close **Marker inspector** with **×** or **Escape**. Click **Overview** above the map to return; your match selection stays unchanged.
+5. **Inspect events:** use **Jump to combat**, then click a map marker. Close **Marker inspector** with **×** or **Escape**. Click **Overview** above the map to return; your match selection stays unchanged.
 
 ### Analyse the Example Match
 

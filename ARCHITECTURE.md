@@ -4,10 +4,10 @@ Let’s follow a gameplay recording from its source file to the map. We prepare 
 
 ## Choosing Our Stack
 
-- **Next.js, React, TypeScript:** we keep the interface/API together and share typed contracts. SVG overlays draw journeys, events, and heatmaps.
-- **Neon PostgreSQL:** related tables organize maps, matches, participants, and events. Indexes make filtering efficient.
-- **Python/Spark:** one batch pipeline validates and transforms Parquet. Private S3-compatible storage retains originals and processed files.
-- **Deployment:** Vercel hosts the app; Neon provides database/storage. Docker Compose supports development and separate ingestion. The hosted tool works independently of our development machine.
+- **Next.js, React, TypeScript:** one interface/API with shared contracts. SVG draws journeys, events, and heatmaps.
+- **Neon PostgreSQL:** related tables organize gameplay records; indexes support filtering.
+- **Python/Spark:** batch validation and transformation of Parquet; private S3-compatible storage retains originals and processed files.
+- **Deployment:** Vercel hosts the app; Neon provides database/storage. Docker Compose supports development and separate ingestion; the hosted tool works independently of our machine.
 
 ## Following the Data
 
@@ -34,10 +34,10 @@ flowchart LR
     Assets --> Browser
 ```
 
-1. **First, receive the files.** Uploads enter Landing. We archive originals unchanged so we can revisit them and trace each record’s source.
-2. **Next, prepare the records.** Spark decodes labels, validates fields, and calculates coordinates. We keep the earliest identical file copy; file hashes and original row numbers preserve event identities. Processed Parquet follows UTC event dates.
-3. **Then, publish the changes.** We rebuild affected matches and skip unchanged inputs. Updates commit together, so a failed import leaves existing events intact.
-4. **Now, display the recording.** APIs return metrics, heatmap grids, and timestamp-grouped events from consistent database snapshots. Playback uses loaded records without requesting data for every frame.
+1. **First, receive the files.** Uploads enter Landing; we archive originals unchanged for tracing and reprocessing.
+2. **Next, prepare the records.** Spark decodes labels, validates records, and maps coordinates. We keep the earliest identical file copy; hashes and physical row numbers preserve identities. Processed Parquet follows UTC dates.
+3. **Then, publish the changes.** We rebuild affected matches, skip unchanged inputs, and commit updates together; failed imports leave published events intact.
+4. **Now, display the recording.** APIs return metrics, heatmaps, and timestamp groups from consistent snapshots. Loaded records drive playback without a request per frame.
 
 ## Placing a Player on the Map
 
@@ -71,13 +71,13 @@ The analysis and experiments behind these choices are in [Insights](INSIGHTS.md)
 
 ## Availability and Scalability
 
-We keep exploration separate from preparation, then reduce the work needed to serve each request:
+We separate exploration from preparation and reduce work per request:
 
-- **Availability:** Vercel and Neon serve the tool independently of our development machine and ingestion worker. Atomic publication keeps previously published recordings intact when an import fails.
-- **Request load:** stateless API handlers can run across multiple web instances. Database capacity still determines how many queries we can serve together.
-- **Match discovery:** stored summaries avoid recounting raw events. Search and participant filters run on the server; the interface loads 50 choices at a time.
-- **Playback:** we index journeys once and reuse SVG paths. A browser check retained all 50,000 positions across 100 synthetic participants; it was not a concurrency benchmark.
-- **Current limits:** history-wide file discovery, one ingestion job, and full-recording playback responses still constrain growth. Failover and sustained-load testing are needed before claiming high availability or large-scale capacity.
+- **Availability:** hosted serving runs independently of our development machine and ingestion worker. Atomic publication protects existing recordings from failed imports.
+- **Request load:** stateless APIs support multiple web instances; database capacity still governs query concurrency.
+- **Match discovery:** stored summaries and server-side filters avoid recounting raw events; the interface loads 50 choices per page.
+- **Playback:** indexed journeys reuse SVG paths. A browser check retained 50,000 positions across 100 synthetic participants; concurrency remains unbenchmarked.
+- **Current limits:** history-wide discovery, one ingestion job, and full-recording responses constrain growth. Failover and sustained-load tests must validate availability and capacity.
 
 ### Growth Scenario
 
@@ -89,16 +89,16 @@ Let’s consider **10 million downloads**, **3 million active accounts**, and **
 
 ### Proposed Improvements
 
-For this workload, we would extend the pipeline and serving design together:
+For this workload, we would extend ingestion and serving together:
 
-1. **Incremental file discovery:** use [S3 notifications and SQS](https://docs.aws.amazon.com/AmazonS3/latest/userguide/notification-how-to-event-types-and-destinations.html) with durable processing receipts. Process new arrivals, tolerate duplicate notifications and late files, preserve copy-selection rules, and run periodic archive audits. Our current file-per-player/match layout would produce about **10 million files/day** in this scenario.
-2. **Distributed compute:** adapt Spark jobs for [Amazon EMR](https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-overview-arch.html), reading and writing S3 directly. Replace local staging and fixed partition limits with workload-based partitioning and file compaction.
-3. **Parallel publication:** replace the global ingestion lock and single publication stream with bounded, independently owned match batches. Keep retries safe and publish events and summaries atomically.
-4. **Storage and queries:** keep bulk history in partitioned Parquet with an analytical query layer, following an [AWS game analytics pattern](https://docs.aws.amazon.com/wellarchitected/latest/games-industry-lens/game-analytics-pipeline.html). Use PostgreSQL for catalogues, summaries, and bounded recent match data, with explicit retention.
+1. **Incremental file discovery:** use [S3 notifications and SQS](https://docs.aws.amazon.com/AmazonS3/latest/userguide/notification-how-to-event-types-and-destinations.html) with durable processing receipts. Handle new arrivals, duplicate notifications and late files, retain copy-selection rules, and audit archives periodically. The current file-per-player/match layout produces about **10 million files/day** in this scenario.
+2. **Distributed compute:** adapt Spark for [Amazon EMR](https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-overview-arch.html) with direct S3 reads/writes, workload-based partitioning, and file compaction instead of local staging and fixed limits.
+3. **Parallel publication:** replace the global lock and single publication stream with bounded match batches, safe retries, and atomic event/summary publication.
+4. **Storage and queries:** keep bulk history in partitioned Parquet with [analytical queries](https://docs.aws.amazon.com/wellarchitected/latest/games-industry-lens/game-analytics-pipeline.html); use PostgreSQL for catalogues, summaries, and bounded recent matches with explicit retention.
 5. **Playback and resilience:** fetch playback in timestamp-grouped chunks, configure database failover, and test peak traffic, ingestion backlogs, and recovery.
 
-EMR provides distributed processing; achieving **5 billion events/day end to end** remains a target to validate through sizing and load tests. These improvements are proposed, not implemented.
+These changes are proposed. **Five billion events/day end to end** remains a target requiring sizing and load tests.
 
 ## TODO: Cloud Capacity Assessment
 
-- [ ] **9 November 2026:** Estimate how much data the current design can handle on a minimal-cost Azure or AWS setup. Define the compute, database, and storage configuration and monthly cost. Assess total data volume, ingestion throughput, playback size, and concurrent usage. Document assumptions, bottlenecks, and the testing needed to validate the estimates.
+- [ ] **9 November 2026:** Estimate minimal-cost Azure/AWS compute, database, storage, and monthly cost; assess retention, ingestion, playback, and concurrency. Record assumptions, bottlenecks, and validation tests.

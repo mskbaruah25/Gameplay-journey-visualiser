@@ -74,6 +74,10 @@ file discovery, EMR/S3 processing, parallel publication, analytical storage,
 chunked playback, and failover/load testing as proposals. This documentation
 request does not authorize implementing or provisioning those changes.
 
+During the final submission review, the user requested only light condensation
+of the architecture document. Retain all sections, the diagram, and the worked
+scenario; do not remove substantial detail solely to force a one-page layout.
+
 The user subsequently requested that the README describe the finished product,
 with all implemented features presented together. They plan to create a new
 production branch, merge the features, and make that version live. Remove
