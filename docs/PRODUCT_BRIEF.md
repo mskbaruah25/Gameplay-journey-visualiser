@@ -55,6 +55,25 @@ Keep the architecture draft focused on the system's flow, reasoning, coordinate
 mapping, and data assumptions. The user specifically requested removing the
 hosting region and similarly unnecessary operational details from this document.
 
+The user requested an "Availability and Scalability" section immediately after
+the architecture's tradeoffs section. Describe implemented availability safeguards
+and load optimizations precisely, distinguishing them from untested failover or
+large-scale capacity. The proposed file-discovery refactor remains deferred.
+
+The architecture document also includes a Mermaid diagram under "Following the
+Data", showing the implemented storage, batch ETL, database, API, and browser
+flow. Show processed Parquet as an ETL output, and minimap assets alongside API
+data; do not depict proposed EMR or distributed-ingestion changes as implemented.
+
+The availability/scalability section includes the user's hypothetical growth
+scenario: 10 million downloads, 3 million active accounts, and 1 million daily
+players. Assuming 10 matches per daily player and 100 human players per match
+gives 100,000 matches/day; 50,000 events per match gives 5 billion events/day.
+Document current sample storage projections as estimates. Discuss incremental
+file discovery, EMR/S3 processing, parallel publication, analytical storage,
+chunked playback, and failover/load testing as proposals. This documentation
+request does not authorize implementing or provisioning those changes.
+
 The user subsequently requested that the README describe the finished product,
 with all implemented features presented together. They plan to create a new
 production branch, merge the features, and make that version live. Remove
