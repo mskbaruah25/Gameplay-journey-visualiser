@@ -204,9 +204,9 @@ per historical position. Simultaneous timestamps, backward seeking, human/bot
 markers, post-death positions, and the 15-second trail breaks are unchanged.
 The full-recording API and its 100,000-event response limit remain unchanged.
 
-Playback combat indicators use the same frame indexes as the scrubber. Kill
-labels, combat-death labels, and storm deaths occupy separate lanes; the exact
-timestamp menu keeps densely packed moments reachable. Marker inspection uses
+The Jump to combat menu uses the same frame indexes as the scrubber and lists
+kill, combat-death, and storm-death timestamps. Separate event lanes below the
+scrubber were removed at the user's request. Marker inspection uses
 the already loaded events and participant metadata, without an extra database
 query. It pauses playback and shows recorded actor/time/coordinates, including
 simultaneous records, without inferring an opponent. Both features are inside

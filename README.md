@@ -30,7 +30,7 @@ For these checks, select **Ambrose Valley → 12 Feb 2026**, search `fbbc5d02`, 
 | Heatmaps | Toggle **Player traffic**, **Kill zones**, **Death zones**, and **Loot pickups**. Drag **Overlay opacity**; click **Reset layers**. | Density/opacity changes; reset clears overlays and restores 75% opacity. |
 | Human/bot journeys | In Playback, uncheck/recheck **Bot 1471**. | Its journey and markers disappear/return; **Map legend** explains colours and symbols. |
 | Playback controls | Try **Play/Pause**, the circular-arrow **Restart**, all five speeds (1x–2x), and the playback slider. | Clock/trails update; restart returns to the beginning. **Event x of 120** counts timestamp groups. |
-| Combat and inspection | Click a timeline indicator or choose **01:13** or **05:06** in **Jump to combat**. | Playback pauses; the inspector shows actor/time/coordinates and simultaneous records. |
+| Combat and inspection | Choose **01:13** or **05:06** in **Jump to combat**, then click a map marker. | Playback pauses; the inspector shows actor/time/coordinates and simultaneous records. |
 | Storm deaths | Disable **Multiple recorded participants**. Choose **Ambrose Valley → 10 Feb 2026**; search/select `5a081fe4`. In Playback, choose **14:38 · 1 storm death**. | The storm marker inspects as `KilledByStorm`. Overview's **Storm deaths** layer shows its location. |
 | Map controls | Click **+**, drag the map, then click the circular-arrow **Reset view**. | Zoom/pan changes; reset restores the initial view. |
 | Panels/fullscreen | Toggle **Hide/Show sidebar**, **Hide/Show statistics** in Overview, and **Map legend**. Click the expand icon; exit with it or Escape. | Panels reopen. Fullscreen retains heatmap controls in Overview and timeline/inspection in Playback. |
