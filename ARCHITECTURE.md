@@ -43,7 +43,11 @@ Before interpreting what we see, we need a few conventions:
 | Choice | What we gain / accept |
 | --- | --- |
 | Spark batch processing | One repeatable pipeline; extra runtime overhead for this small dataset. |
-| Indexed events and uncached APIs | Fresh results without summary synchronization; more query work as data grows. |
+| Stored match summaries and indexed events | Fast catalogue queries; summaries publish atomically with events. Detailed metrics remain on demand. |
 | Free hosting and manual ingestion | Independent web availability at low cost; uploads need an ETL run. |
 
-The observations behind these choices are in [data nuances](docs/DATA_NUANCES.md).
+The analysis and experiments behind these choices are in [Insights](INSIGHTS.md).
+
+## TODO: Cloud Capacity Assessment
+
+- [ ] **9 November 2026:** Estimate how much data the current design can handle on a minimal-cost Azure or AWS setup. Define the compute, database, and storage configuration and monthly cost. Assess total data volume, ingestion throughput, playback size, and concurrent usage. Document assumptions, bottlenecks, and the testing needed to validate the estimates.

@@ -42,8 +42,12 @@ def connect(database_url):
 def migrate(connection):
     with connection.transaction():
         connection.execute('SELECT pg_advisory_xact_lock(64821101)')
+        connection.execute('CREATE TABLE IF NOT EXISTS schema_migrations (name text PRIMARY KEY, applied_at timestamptz NOT NULL DEFAULT now())')
         for path in sorted((PROJECT_ROOT / 'database/migrations').glob('*.sql')):
+            if connection.execute('SELECT 1 FROM schema_migrations WHERE name=%s', (path.name,)).fetchone():
+                continue
             connection.execute(path.read_text())
+            connection.execute('INSERT INTO schema_migrations (name) VALUES (%s)', (path.name,))
         maps = json.loads((PROJECT_ROOT / 'config/maps.json').read_text())
         for row in maps:
             connection.execute('''
@@ -101,4 +105,15 @@ def publish(connection, sources, event_files, affected_matches, run_id, report):
             stored_columns = EVENT_COLUMNS[:-3]
             names = ', '.join(stored_columns)
             connection.execute(f'INSERT INTO events ({names}) SELECT {names} FROM staged_events')
+            # Publish catalogue counts in the same transaction as their events.
+            # Rebuild every UTC slice, including cross-midnight recordings.
+            connection.execute('DELETE FROM match_summaries WHERE match_id = ANY(%s)', (affected_matches,))
+            connection.execute('''
+                INSERT INTO match_summaries (match_id, event_date, event_count, humans, bots)
+                SELECT match_id, event_date, count(*),
+                    count(DISTINCT participant_id) FILTER (WHERE actor_type='human'),
+                    count(DISTINCT participant_id) FILTER (WHERE actor_type='bot')
+                FROM staged_events
+                GROUP BY GROUPING SETS ((match_id), (match_id, event_date))
+            ''')
         connection.execute('''UPDATE etl_runs SET status='succeeded', finished_at=now(), report=%s WHERE id=%s''', (Jsonb(report), run_id))

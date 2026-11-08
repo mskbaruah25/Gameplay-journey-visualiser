@@ -181,9 +181,28 @@ Dates are optional on the match-specific routes. Event/match listings accept `li
 
 Match choices include `humans` and `bots`: distinct recorded participant counts
 within the requested UTC date, or the full recording when date is omitted. The
-web app applies search and the multiple-participant filter to its complete
-paginated match list, keeping original match numbers and the active selection.
-No additional table or migration is required.
+web app requests 50 choices at a time. `search` matches the number, displayed
+label, or ID; `multipleOnly=true` requires more than one recorded participant.
+Both filters run on the server. Numbers are assigned within the map/date
+catalogue before filtering. Responses include `matchNumber`, filtered `total`,
+unfiltered `availableTotal`, and `hasMore`. The active selection stays available
+when another page or search hides it; map/date changes reset these controls.
+
+Migration `002_match_summaries.sql` adds a full-match summary and one per UTC
+event date, including distinct participant counts for each scope. Run the ETL
+`migrate` command before starting the updated web application. Existing events
+are backfilled once; `schema_migrations` records applied migrations. Future
+affected-match publications replace their summaries in the same transaction as
+the events. Unchanged imports leave the summaries intact. A separately managed
+read-only web role needs SELECT access to the new `match_summaries` table.
+
+Playback prepares a participant index once per recording. Binary lookup finds
+the samples visible at each frame; cached paths group positions into chunks of
+128. Completed chunks are reused and only the current partial chunk is rebuilt.
+Round-capped path strokes preserve every sampled point without one SVG element
+per historical position. Simultaneous timestamps, backward seeking, human/bot
+markers, post-death positions, and the 15-second trail breaks are unchanged.
+The full-recording API and its 100,000-event response limit remain unchanged.
 
 Playback combat indicators use the same frame indexes as the scrubber. Kill
 labels, combat-death labels, and storm deaths occupy separate lanes; the exact
@@ -194,6 +213,14 @@ simultaneous records, without inferring an opponent. Both features are inside
 the fullscreen container. See [the usability verification](analysis/extra_features/README.md).
 
 ## Verification
+
+The catalogue/playback changes passed 10 API checks, 10 ETL checks, three
+playback regressions, TypeScript, and a production build. Browser verification
+includes an explicitly synthetic 50,000-position recording with 100 participants.
+See [the performance verification](analysis/explorer_performance/README.md) for
+data reconciliation, migration requirements, and the limits of this check.
+
+Run `npm run test:playback` with Node.js 22.18 or later for journey-index checks.
 
 ```sh
 npm run typecheck

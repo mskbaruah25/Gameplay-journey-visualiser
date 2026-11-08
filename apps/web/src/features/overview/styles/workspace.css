@@ -50,3 +50,8 @@
   .map-view:fullscreen .map-stage { flex: 1; }
   .map-legend { max-width: calc(100% - 90px); }
 }
+
+.match-pagination { display: flex; gap: 8px; margin-top: 10px; }
+.match-pagination button { flex: 1; padding: 7px 5px; border: 1px solid var(--line); border-radius: 5px; background: var(--panel); color: var(--text-soft); font: inherit; font-size: 11px; cursor: pointer; }
+.match-pagination button:disabled { opacity: 0.45; cursor: default; }
+.match-pagination button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }

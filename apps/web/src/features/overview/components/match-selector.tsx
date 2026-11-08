@@ -1,81 +1,80 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useRef } from "react";
 import { ChevronDown, Crosshair, Search, X } from "lucide-react";
-import type { MatchOption } from "@/lib/gameplay-types";
+import type { MatchChoice, MatchPage } from "@/lib/gameplay-types";
+import { matchLabel } from "@/lib/match-label";
 
 interface Props {
-  matches: MatchOption[];
-  value: string;
+  page?: MatchPage;
+  selected?: MatchChoice;
+  search: string;
+  multipleOnly: boolean;
+  offset: number;
+  pageSize: number;
   loading: boolean;
   onChange: (matchId: string) => void;
+  onSearch: (value: string) => void;
+  onMultipleOnly: (value: boolean) => void;
+  onPage: (offset: number) => void;
 }
 
-export function MatchSelector({ matches, value, loading, onChange }: Props) {
-  const [search, setSearch] = useState("");
-  const [multipleOnly, setMultipleOnly] = useState(false);
+export function MatchSelector({ page, selected, search, multipleOnly, offset, pageSize, loading,
+  onChange, onSearch, onMultipleOnly, onPage }: Props) {
   const searchInput = useRef<HTMLInputElement>(null);
-  const query = search.trim().toLowerCase();
-
-  // Number the complete list first so searching never renames a match.
-  const options = matches.map((match, index) => ({
-    id: match.id,
-    label: `Match ${String(index + 1).padStart(3, "0")} · ${match.humans} ${match.humans === 1 ? "human" : "humans"} · ${match.bots} ${match.bots === 1 ? "bot" : "bots"}`,
-    participantCount: match.humans + match.bots,
-  }));
-  const results = options.filter((option) =>
-    (!multipleOnly || option.participantCount > 1)
-    && (option.id.toLowerCase().includes(query) || option.label.toLowerCase().includes(query)));
-  const selected = options.find((option) => option.id === value);
-  const selectedMatch = matches.find((match) => match.id === value);
-  const selectedOutsideResults = selected && !results.some((option) => option.id === value);
-
-  let searchStatus;
-  if (loading) searchStatus = "Loading matches…";
-  else if (!query && !multipleOnly) searchStatus = `${matches.length} ${matches.length === 1 ? "match" : "matches"} available`;
-  else if (results.length) searchStatus = `${results.length} of ${matches.length} matches found`;
-  else searchStatus = "No matches found. Change the search or participant filter.";
+  const matches = page?.matches ?? [];
+  const selectedOutsideResults = selected && !matches.some((match) => match.id === selected.id);
+  const filtered = Boolean(search.trim() || multipleOnly);
+  let searchStatus = loading ? "Loading matches…" : "No imported matches";
+  if (!loading && page) {
+    searchStatus = matches.length
+      ? `Showing ${offset + 1}–${offset + matches.length} of ${page.total} ${page.total === 1 ? "match" : "matches"}${filtered ? ` found (${page.availableTotal} available)` : ""}`
+      : page.total ? "No matches on this page. Choose Previous matches."
+        : page.availableTotal ? "No matches found. Change the search or participant filter." : "No imported matches";
+  }
 
   return <div className="select-field match-selector">
     <label htmlFor="match">Match</label>
     <div className="match-search-wrap">
       <Search size={14} aria-hidden="true" />
-      <input id="match-search" ref={searchInput} type="search" value={search}
+      <input id="match-search" ref={searchInput} type="search" value={search} maxLength={200}
         aria-label="Search matches" aria-controls="match" aria-describedby="match-search-results"
         placeholder="Search number or match ID" autoComplete="off" spellCheck={false}
-        disabled={!matches.length} onChange={(event) => setSearch(event.target.value)} />
+        onChange={(event) => onSearch(event.target.value)} />
       {search && <button type="button" aria-label="Clear match search" onClick={() => {
-        setSearch("");
+        onSearch("");
         searchInput.current?.focus();
       }}><X size={13} /></button>}
     </div>
     <label className="match-participant-filter">
-      <input type="checkbox" checked={multipleOnly} disabled={!matches.length}
-        onChange={(event) => setMultipleOnly(event.target.checked)} />
+      <input type="checkbox" checked={multipleOnly} onChange={(event) => onMultipleOnly(event.target.checked)} />
       <span>Multiple recorded participants</span>
     </label>
     <div className="select-wrap">
       <Crosshair size={16} aria-hidden="true" />
-      <select id="match" value={value} disabled={!matches.length} title={value}
-        onChange={(event) => onChange(event.target.value)}>
-        {!matches.length && <option value="">{loading ? "Loading matches…" : "No imported matches"}</option>}
-        {/* Keep the displayed value honest while a search hides the active match. */}
+      <select id="match" value={selected?.id ?? ""} disabled={loading || (!matches.length && !selected)} title={selected?.id}
+        aria-busy={loading} onChange={(event) => onChange(event.target.value)}>
+        {!selected && <option value="">{loading ? "Loading matches…" : "Select a match"}</option>}
         {selectedOutsideResults && <optgroup label="Currently selected">
-          <option value={selected.id}>{selected.label}</option>
+          <option value={selected.id}>{matchLabel(selected)}</option>
         </optgroup>}
-        {query || multipleOnly ? <optgroup label="Filtered matches">
-          {results.map((option) => <option key={option.id} value={option.id}>{option.label}</option>)}
-          {!results.length && <option disabled>No matching matches</option>}
-        </optgroup> : results.map((option) => <option key={option.id} value={option.id}>{option.label}</option>)}
+        <optgroup label={filtered ? "Filtered matches" : "Matches on this page"}>
+          {matches.map((match) => <option key={match.id} value={match.id}>{matchLabel(match)}</option>)}
+          {!matches.length && !loading && <option disabled>No matching matches</option>}
+        </optgroup>
       </select>
       <ChevronDown size={14} className="select-chevron" aria-hidden="true" />
     </div>
-    {selectedMatch && <p className="selected-match-details">
-      Recorded: {selectedMatch.humans} {selectedMatch.humans === 1 ? "human" : "humans"} · {selectedMatch.bots} {selectedMatch.bots === 1 ? "bot" : "bots"}
+    {selected && <p className="selected-match-details">
+      Recorded: {selected.humans} {selected.humans === 1 ? "human" : "humans"} · {selected.bots} {selected.bots === 1 ? "bot" : "bots"}
     </p>}
     <p id="match-search-results" className="match-search-results" role="status">
       {searchStatus}
-      {selectedOutsideResults && " Current match is outside these filters."}
+      {!loading && selectedOutsideResults && " Current match is outside this page or these filters."}
     </p>
+    <div className="match-pagination" aria-label="Match result pages">
+      <button type="button" disabled={loading || offset === 0} onClick={() => onPage(Math.max(0, offset - pageSize))}>Previous matches</button>
+      <button type="button" disabled={loading || !page?.hasMore} onClick={() => onPage(offset + pageSize)}>Next matches</button>
+    </div>
   </div>;
 }

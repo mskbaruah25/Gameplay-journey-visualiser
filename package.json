@@ -7,6 +7,7 @@
     "build": "npm run build --workspace apps/web",
     "start": "npm run start --workspace apps/web",
     "typecheck": "npm run typecheck --workspace apps/web",
-    "test:api": "node --test tests/api.test.mjs"
+    "test:api": "node --test tests/api.test.mjs",
+    "test:playback": "node --experimental-strip-types --test tests/journey-index.test.mjs"
   }
 }

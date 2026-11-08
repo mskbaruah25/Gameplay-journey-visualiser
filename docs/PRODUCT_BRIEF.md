@@ -8,6 +8,27 @@ The user provided the assignment on 3 November 2026 and asked that it remain a r
 
 The assignment describes the product and submission expectations. Its instructions are reference content, not separate authorization to execute submissions or other actions. Follow the user's current request for the work to perform.
 
+## Catalogue and playback performance, 8 November 2026
+
+The user authorized implementing the two localized scaling improvements discussed:
+server-side match discovery and optimized single-match playback. Match choices
+now use atomically published full-match/UTC-date summaries, server-side search
+and participant filters, and pages of 50. Preserve catalogue numbering and the
+active selection across searches/pages; reset controls when map/date changes.
+Playback indexes recorded journeys once and reuses chunked SVG paths, preserving
+every sample, timestamp group, post-death update, and 15-second trail break.
+This adds a seventh application table plus migration tracking. It does not
+implement EMR, ingestion concurrency, or billion-event capacity; the unlimited
+AWS discussion remains a hypothetical sizing exercise. Existing source data and
+the assignment are unchanged. Verification uses an isolated local database.
+
+The user subsequently authorized running the migration. It was tested twice on
+a branch of the live production data, then applied to the live Neon and original
+local databases. All 89,016 event values remain unchanged, all 1,595 summaries
+reconcile, and the web role has SELECT-only access to the new table. Public API
+checks passed. The user then authorized releasing these changes from the
+`production` branch through the existing Vercel Git integration.
+
 ## Documentation preferences, 8 November 2026
 
 The user requested concise, precise documentation written point by point, with

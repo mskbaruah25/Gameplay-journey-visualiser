@@ -26,7 +26,7 @@ For these checks, select **Ambrose Valley → 12 Feb 2026**, search `fbbc5d02`, 
 
 | Feature | Steps to check | Expected result |
 | --- | --- | --- |
-| Match discovery | Enable **Multiple recorded participants**; clear search with **×**. | Both filters combine. The active match remains available outside filtered results. |
+| Match discovery | Search by number or match ID; enable **Multiple recorded participants**. Use **Next matches** / **Previous matches** to browse pages of 50; clear search with **×**. | Both filters combine across all results. Match numbers and the active selection survive searches and page changes. |
 | Heatmaps | Toggle **Player traffic**, **Kill zones**, **Death zones**, and **Loot pickups**. Drag **Overlay opacity**; click **Reset layers**. | Density/opacity changes; reset clears overlays and restores 75% opacity. |
 | Human/bot journeys | In Playback, uncheck/recheck **Bot 1471**. | Its journey and markers disappear/return; **Map legend** explains colours and symbols. |
 | Playback controls | Try **Play/Pause**, the circular-arrow **Restart**, all five speeds (1x–2x), and the **Recorded timestamps** slider. | Clock/trails update; restart returns to the beginning. **Event x of 120** counts timestamp groups. |
@@ -81,11 +81,12 @@ Keep credentials in Git-ignored environment files. See [development](docs/DEVELO
 
 ## Verification
 
-With Node.js 22 installed, run:
+With Node.js 22.18 or later installed, run:
 
 ```sh
 npm ci
 npm run typecheck
+npm run test:playback
 npm run build
 ```
 

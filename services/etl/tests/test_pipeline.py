@@ -71,6 +71,12 @@ class PipelineTests(unittest.TestCase):
                     self.assertEqual(connection.execute("SELECT count(*) FROM events WHERE event_type='Loot'").fetchone()[0], 2)
                     self.assertEqual(connection.execute("SELECT count(*) FROM events WHERE post_death_position").fetchone()[0], 1)
                     self.assertEqual(connection.execute("SELECT source_path FROM source_files WHERE status='loaded'").fetchone()[0], f'2026-02-10/{first.name}')
+                    self.assertEqual(connection.execute('''
+                        SELECT event_date::text, event_count, humans, bots FROM match_summaries
+                        WHERE match_id=%s ORDER BY event_date NULLS FIRST
+                    ''', (FIRST_MATCH,)).fetchall(), [
+                        (None, 7, 1, 0), ('2026-02-10', 1, 1, 0), ('2026-02-11', 6, 1, 0),
+                    ])
                 # Neither Landing nor downstream processing should start Spark
                 # when the object versions and rule versions are unchanged.
                 with patch('lila_etl.landing.start_spark') as landing_spark, patch('lila_etl.pipeline.start_spark') as pipeline_spark:
@@ -82,6 +88,7 @@ class PipelineTests(unittest.TestCase):
                 self.assertEqual(repeated['landing']['unchanged_files'], 2)
                 with psycopg.connect(settings.database_url) as connection:
                     self.assertEqual(connection.execute('SELECT id FROM events ORDER BY id').fetchall(), before)
+                    self.assertEqual(connection.execute('SELECT count(*) FROM match_summaries').fetchone()[0], 3)
 
                 # The same bot ID in two matches creates two recorded participants.
                 second_match = 'test-match-b.nakama-0'
@@ -99,6 +106,13 @@ class PipelineTests(unittest.TestCase):
                 with psycopg.connect(settings.database_url) as connection:
                     self.assertEqual(connection.execute('SELECT count(*) FROM events').fetchone()[0], 9)
                     self.assertEqual(connection.execute("SELECT count(*) FROM match_participants WHERE source_user_id='1428'").fetchone()[0], 2)
+                    summaries = connection.execute('''
+                        SELECT match_id, event_date::text, event_count, humans, bots FROM match_summaries
+                        ORDER BY match_id, event_date NULLS FIRST
+                    ''').fetchall()
+                    self.assertEqual([row[1:] for row in summaries if row[0] == FIRST_MATCH], [
+                        (None, 8, 1, 1), ('2026-02-10', 1, 1, 0), ('2026-02-11', 7, 1, 1),
+                    ])
 
                 bad_match = 'test-invalid.nakama-0'
                 self.write_recordings([
@@ -110,6 +124,10 @@ class PipelineTests(unittest.TestCase):
                 with psycopg.connect(settings.database_url) as connection:
                     self.assertEqual(connection.execute('SELECT count(*) FROM events').fetchone()[0], 9)
                     self.assertEqual(connection.execute("SELECT count(*) FROM etl_runs WHERE status='failed'").fetchone()[0], 1)
+                    self.assertEqual(connection.execute('''
+                        SELECT match_id, event_date::text, event_count, humans, bots FROM match_summaries
+                        ORDER BY match_id, event_date NULLS FIRST
+                    ''').fetchall(), summaries)
 
                 # A failed worker must report the source hash error, rather than
                 # letting a partially downloaded batch reach publication.

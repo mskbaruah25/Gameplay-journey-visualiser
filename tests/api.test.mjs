@@ -73,6 +73,40 @@ test("representative recordings preserve events and exclude the copied file", as
   assert.equal(data.stats.lootItems, 43);
 });
 
+test("server-side search and participant filtering preserve catalogue numbers across pages", async () => {
+  const scope = "/api/matches?mapId=AmbroseValley&date=2026-02-12";
+  const all = await get(scope + "&limit=500");
+  const example = all.matches.find((match) => match.id.startsWith("fbbc5d02"));
+  assert.equal(example.matchNumber, 114);
+  for (const search of ["fbbc5d02", "  FBBC5D02  ", "114", "Match 114", "1 human · 15 bots"]) {
+    const page = await get(scope + "&limit=50&search=" + encodeURIComponent(search));
+    assert.ok(page.matches.some((match) => match.id === example.id));
+    assert.equal(page.matches.find((match) => match.id === example.id).matchNumber, 114);
+    assert.equal(page.availableTotal, all.total);
+  }
+  const first = await get(scope + "&limit=50");
+  const second = await get(scope + "&limit=50&offset=50");
+  assert.equal(first.matches.length, 50);
+  assert.equal(second.matches[0].matchNumber, 51);
+  assert.deepEqual([...first.matches, ...second.matches], all.matches.slice(0, 100));
+  const multiple = await get("/api/matches?multipleOnly=true&limit=500");
+  assert.equal(multiple.total, 53);
+  assert.equal(multiple.availableTotal, 796);
+  assert.ok(multiple.matches.every((match) => match.humans + match.bots > 1));
+  assert.ok(multiple.matches.some((match) => match.matchNumber > multiple.total));
+  for (const search of ["no-such-match", "%", "_", "' OR true --"]) {
+    const page = await get(scope + "&search=" + encodeURIComponent(search));
+    assert.deepEqual(page.matches, []);
+    assert.equal(page.total, 0);
+    assert.equal(page.hasMore, false);
+    assert.equal(page.availableTotal, all.total);
+  }
+  const beyondEnd = await get(scope + "&offset=9999");
+  assert.deepEqual(beyondEnd.matches, []);
+  assert.equal(beyondEnd.total, all.total);
+  assert.equal(beyondEnd.hasMore, false);
+});
+
 test("playback groups simultaneous events without losing or repeating rows", async () => {
   const data = await get(`/api/matches/${matchId}/playback`);
   const events = data.frames.flatMap((frame) => frame.events);
@@ -133,6 +167,8 @@ test("invalid parameters and missing recordings return explicit errors", async (
   for (const [path, status] of [
     ["/api/matches?date=2026-02-30", 400],
     ["/api/matches?limit=-1", 400],
+    ["/api/matches?multipleOnly=yes", 400],
+    ["/api/matches?search=" + "x".repeat(201), 400],
     ["/api/matches/not-a-recorded-match", 404],
     [`/api/matches/${matchId}/heatmap?layer=invalid`, 400],
     [`/api/matches/${matchId}/heatmap?gridSize=0`, 400],

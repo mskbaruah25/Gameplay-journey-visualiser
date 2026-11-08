@@ -20,6 +20,17 @@ export interface MatchOption {
   bots: number;
 }
 
+export interface MatchChoice extends MatchOption {
+  matchNumber: number;
+}
+
+export interface MatchPage {
+  matches: MatchChoice[];
+  total: number;
+  availableTotal: number;
+  hasMore: boolean;
+}
+
 export interface Participant {
   id: string;
   userId: string;

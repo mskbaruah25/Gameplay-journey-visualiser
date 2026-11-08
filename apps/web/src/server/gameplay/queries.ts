@@ -1,5 +1,5 @@
 import type { PoolClient } from "pg";
-import type { GameEvent, GameMap, MatchOption, MatchOverview, MatchStats, Participant, PlaybackFrame } from "@/lib/gameplay-types";
+import type { GameEvent, GameMap, MatchChoice, MatchOption, MatchOverview, MatchStats, Participant, PlaybackFrame } from "@/lib/gameplay-types";
 import { readSnapshot } from "../database";
 import { ApiError } from "../http";
 
@@ -16,32 +16,41 @@ export async function listMaps() {
 export async function listDates(mapId: string | null) {
   return readSnapshot(async (client) => {
     const result = await client.query<{ date: string }>(`
-      SELECT DISTINCT e.event_date::text AS date FROM events e JOIN matches m ON m.id=e.match_id
-      WHERE ($1::text IS NULL OR m.map_id=$1) ORDER BY date
+      SELECT DISTINCT s.event_date::text AS date FROM match_summaries s JOIN matches m ON m.id=s.match_id
+      WHERE s.event_date IS NOT NULL AND ($1::text IS NULL OR m.map_id=$1) ORDER BY date
     `, [mapId]);
     return { dates: result.rows.map((row) => row.date) };
   });
 }
 
-export async function listMatches(mapId: string | null, date: string | null, limit: number, offset: number) {
+export async function listMatches(mapId: string | null, date: string | null, limit: number, offset: number,
+  search = "", multipleOnly = false) {
   return readSnapshot(async (client) => {
-    const filters = [mapId, date];
-    const totals = await client.query<{ total: number }>(`
-      SELECT count(DISTINCT m.id)::integer AS total FROM matches m JOIN events e ON e.match_id=m.id
-      WHERE ($1::text IS NULL OR m.map_id=$1) AND ($2::date IS NULL OR e.event_date=$2)
-    `, filters);
-    const rows = await client.query<MatchOption>(`
-      SELECT m.id, m.map_id AS "mapId", m.first_recorded_at AS "firstRecordedAt",
-        m.last_recorded_at AS "lastRecordedAt", count(*)::integer AS "eventCount",
-        count(DISTINCT p.id) FILTER (WHERE p.actor_type='human')::integer AS humans,
-        count(DISTINCT p.id) FILTER (WHERE p.actor_type='bot')::integer AS bots
-      FROM matches m JOIN events e ON e.match_id=m.id
-        JOIN match_participants p ON p.id=e.participant_id
-      WHERE ($1::text IS NULL OR m.map_id=$1) AND ($2::date IS NULL OR e.event_date=$2)
-      GROUP BY m.id ORDER BY m.first_recorded_at, m.id LIMIT $3 OFFSET $4
-    `, [...filters, limit, offset]);
-    const total = totals.rows[0].total;
-    return { matches: rows.rows, total, hasMore: offset + rows.rows.length < total };
+    // Number the map/date catalogue before searching so labels survive filters
+    // and pagination. All catalogue work reads summaries, never raw events.
+    const result = await client.query<{ matches: MatchChoice[]; total: number; availableTotal: number }>(`
+      WITH catalogue AS MATERIALIZED (
+        SELECT m.id, m.map_id AS "mapId", m.first_recorded_at AS "firstRecordedAt",
+          m.last_recorded_at AS "lastRecordedAt", s.event_count::double precision AS "eventCount",
+          s.humans, s.bots,
+          row_number() OVER (ORDER BY m.first_recorded_at, m.id)::integer AS "matchNumber"
+        FROM matches m JOIN match_summaries s ON s.match_id=m.id
+        WHERE ($1::text IS NULL OR m.map_id=$1) AND s.event_date IS NOT DISTINCT FROM $2::date
+      ), filtered AS MATERIALIZED (
+        SELECT * FROM catalogue WHERE (NOT $4::boolean OR humans+bots > 1)
+          AND ($3::text = '' OR strpos(lower(id), $3) > 0
+            OR strpos(lower('Match ' || lpad("matchNumber"::text, greatest(3, length("matchNumber"::text)), '0')
+              || ' · ' || humans || CASE WHEN humans=1 THEN ' human' ELSE ' humans' END
+              || ' · ' || bots || CASE WHEN bots=1 THEN ' bot' ELSE ' bots' END), $3) > 0)
+      ), page AS (
+        SELECT * FROM filtered ORDER BY "firstRecordedAt", id LIMIT $5 OFFSET $6
+      )
+      SELECT (SELECT count(*)::integer FROM catalogue) AS "availableTotal",
+        (SELECT count(*)::integer FROM filtered) AS total,
+        coalesce((SELECT json_agg(page ORDER BY "firstRecordedAt", id) FROM page), '[]'::json) AS matches
+    `, [mapId, date, search.trim().toLowerCase(), multipleOnly, limit, offset]);
+    const page = result.rows[0];
+    return { ...page, hasMore: offset + page.matches.length < page.total };
   });
 }
 

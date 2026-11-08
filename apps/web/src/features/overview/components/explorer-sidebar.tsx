@@ -41,8 +41,10 @@ export function ExplorerSidebar({ data, isPlayback, collapsed, layers, opacity, 
         {!data.date && <option value="">{data.loading ? "Loading dates…" : "No imported dates"}</option>}
         {data.dates.data?.dates.map((date) => <option key={date} value={date}>{formatDate(date)}</option>)}
       </SelectField>
-      <MatchSelector key={`${data.mapId}:${data.date}`} matches={data.matches.data?.matches ?? []}
-        value={data.matchId} loading={data.dates.loading || data.matches.loading} onChange={data.changeMatch} />
+      <MatchSelector page={data.matches.data} selected={data.selectedMatch} search={data.matchSearch}
+        multipleOnly={data.multipleOnly} offset={data.matchOffset} pageSize={data.matchPageSize}
+        loading={data.dates.loading || data.matches.loading || data.searchPending} onChange={data.changeMatch}
+        onSearch={data.changeMatchSearch} onMultipleOnly={data.changeMultipleOnly} onPage={data.changeMatchPage} />
       <div className="selection-footnote"><Info size={13} />Events on the selected UTC date</div>
     </section>
     {isPlayback ? <PlaybackSidebar participants={data.playback.data?.participants ?? []} hidden={hiddenParticipants} onToggle={onToggleParticipant} />

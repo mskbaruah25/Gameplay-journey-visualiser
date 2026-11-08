@@ -15,7 +15,7 @@ def main():
     parser = argparse.ArgumentParser(description='LILA gameplay ingestion')
     commands = parser.add_subparsers(dest='command', required=True)
     commands.add_parser('init-storage', help='Wait for S3 access and create the private bucket if absent')
-    commands.add_parser('migrate', help='Create the six tables and seed map configuration')
+    commands.add_parser('migrate', help='Apply database migrations and seed map configuration')
     upload = commands.add_parser('upload', help='Upload original Parquet files to date folders in Landing')
     upload.add_argument('directory', type=Path)
     run = commands.add_parser('run', help='Process new files and rebuild affected matches')
