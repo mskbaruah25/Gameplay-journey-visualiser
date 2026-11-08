@@ -1,0 +1,87 @@
+/* Use one toolbar and a compact timeline so fullscreen prioritizes the map. */
+.map-view:fullscreen .playback-controls {
+  display: grid;
+  grid-template-columns: auto minmax(180px, 1fr) auto auto;
+  grid-template-areas:
+    "transport jump speed summary"
+    "timeline timeline timeline timeline"
+    "ticks ticks ticks ticks";
+  align-items: center;
+  gap: 4px 16px;
+  padding: 8px 16px;
+}
+.map-view:fullscreen .timeline-track,
+.map-view:fullscreen .transport-row { display: contents; }
+.map-view:fullscreen .timeline-summary { grid-area: summary; }
+.map-view:fullscreen .timeline-axis { grid-area: timeline; grid-template-columns: minmax(0, 1fr); }
+.map-view:fullscreen .timeline-axis-label { display: none; }
+.map-view:fullscreen .timeline-slider { padding-top: 24px; }
+.map-view:fullscreen .timeline-thumb-timestamp { padding: 2px 5px; font-size: 11px; line-height: 14px; }
+.map-view:fullscreen .timeline-ticks { grid-area: ticks; margin: 0; padding: 0; font-size: 11px; line-height: 14px; }
+.map-view:fullscreen .timeline-preview-badge { padding: 3px 5px; font-size: 11px; white-space: nowrap; }
+.map-view:fullscreen .transport-actions { grid-area: transport; width: auto; gap: 6px; }
+.map-view:fullscreen .play-button { height: 32px; min-height: 32px; min-width: 70px; padding: 0 12px; font-size: 12px; }
+.map-view:fullscreen .restart-playback { width: 32px; height: 32px; }
+.map-view:fullscreen .playback-time { min-width: 98px; margin-left: 3px; font-size: 12px; }
+.map-view:fullscreen .playback-speed { grid-area: speed; width: auto; justify-content: flex-end; gap: 0; }
+/* Preserve the speed group's accessible name without another visible label. */
+.map-view:fullscreen .playback-speed legend {
+  display: block;
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.map-view:fullscreen .speed-options { max-width: none; padding: 2px; }
+.map-view:fullscreen .speed-options button { min-width: 32px; padding: 5px 7px; font-size: 11px; }
+.map-view:fullscreen .combat-jump {
+  grid-area: jump;
+  min-width: 0;
+  margin: 0;
+  gap: 8px;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-end;
+  white-space: nowrap;
+}
+.map-view:fullscreen .combat-jump select {
+  flex: 0 1 240px;
+  width: 240px;
+  max-width: 100%;
+  height: 32px;
+  padding: 5px 8px;
+  font-size: 12px;
+}
+
+@media (max-width: 1050px) {
+  .map-view:fullscreen .playback-controls {
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+      "transport summary"
+      "timeline timeline"
+      "ticks ticks"
+      "jump speed";
+    gap: 4px 12px;
+  }
+  .map-view:fullscreen .combat-jump { justify-content: flex-start; }
+}
+
+@media (max-width: 640px) {
+  .map-view:fullscreen .playback-controls {
+    grid-template-areas:
+      "transport summary"
+      "timeline timeline"
+      "ticks ticks"
+      "jump jump"
+      "speed speed";
+    gap: 4px 8px;
+    padding: 8px 12px;
+  }
+  .map-view:fullscreen .transport-actions { flex-wrap: wrap; }
+  .map-view:fullscreen .playback-time { min-width: 80px; margin-left: 0; gap: 4px; font-size: 11px; }
+  .map-view:fullscreen .combat-jump select { flex: 1; width: auto; }
+}

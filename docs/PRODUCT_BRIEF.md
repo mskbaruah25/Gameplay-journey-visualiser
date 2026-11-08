@@ -188,6 +188,11 @@ fullscreen container. Controls sit outside the draggable map canvas; entering or
 leaving fullscreen retains the selected layers and current playback state. These
 are requested UX additions; gameplay data and counting rules are unchanged.
 
+On 8 November, the user requested more map space in fullscreen playback. Use a
+compact toolbar for transport, combat navigation, speed, and event count, with
+the scrubber below. Wrap controls on smaller screens; retain every control and
+the existing layout outside fullscreen.
+
 ## Map legends and timeline labels, 7 November 2026
 
 The user requested an on-map legend in both Overview and Playback, also

@@ -3,6 +3,7 @@ import "./globals.css";
 import "@/features/playback/styles/playback.css";
 import "@/features/overview/styles/workspace.css";
 import "@/features/playback/styles/combat-timeline.css";
+import "@/features/playback/styles/fullscreen-playback.css";
 import "@/features/playback/styles/marker-inspector.css";
 
 export const metadata: Metadata = {
